@@ -8,7 +8,7 @@ const mongoose = require('mongoose');
  */
 const Follow = new mongoose.Schema({
     strUserName: { type: String, required: true },
-    imgProfile: {type: String, require: true}
+    imgProfile: { type: String, require: true }
 });
 
 
@@ -27,16 +27,14 @@ const Follow = new mongoose.Schema({
  *      arrFollowing:   Array with information of the accounts followd (Follower schemes)
  */
 const userSchema = mongoose.Schema({
-    strUserName: { type: String, required: true }, @
+    strUserName: { type: String, required: true, index: {unique: true} },
     strName: { type: String, required: true },
-    strEmail: { type: String, required: true },
+    strEmail: { type: String, required: true, index: {unique: true} },
     strPassword: { type: String, required: true },
-    strDescription: { type: String, required: true },
-    strLocation: { type: String, required: true },
-    imgBanner: {type: String, require: true},
-    intFollowers: { type: Number, required: true },
+    strDescription: { type: String, required: false, default: null},
+    strLocation: { type: String, required: false, default: null },
+    imgBanner: { type: String, require: false, default: null },
     arrFollowers: [Follow],
-    intFollowing: { type: Number, required: true },
     arrFollowing: [Follow]
 });
 
