@@ -23,8 +23,13 @@ export class SingUpComponent implements OnInit {
       }),
       Username: new FormControl(null, {
         validators: [
-          Validators.email,
           Validators.required
+        ]
+      }),
+      Email: new FormControl(null, {
+        validators: [
+          Validators.required,
+          Validators.email
         ]
       }),
       Password: new FormControl(null, {
@@ -40,6 +45,8 @@ export class SingUpComponent implements OnInit {
   get Name() { return this.singupForm.get('Name'); }
   //--------------------------------------------------------
   get Username() { return this.singupForm.get('Username'); }
+  //--------------------------------------------------------
+  get Email() { return this.singupForm.get('Email'); }
   //--------------------------------------------------------
   get Password() { return this.singupForm.get('Password'); }
 
