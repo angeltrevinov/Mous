@@ -1,0 +1,45 @@
+<div id="LoginContainer" class="row justify-content-center" style="height: 100vh">
+    <div class="col-8 my-auto">
+      <div class="row justify-content-center">
+        <h2 style="color: white">MOUS</h2>
+      </div>
+      <form [formGroup]="loginForm" (submit)="onLogin()">
+        <div class="form-group">
+          <h3>Login</h3>
+        </div>
+        <div class="form-group">
+          <label for="Email">Email:</label>
+          <input type="email"
+                 class="form-control"
+                 id="Email"
+                 placeholder="user@mouse.org"
+                 formControlName="Email"
+                 [ngClass]="{'is-invalid':Email.invalid && Email.touched}">
+          <div class="invalid-feedback">
+            Please enter a valid email
+          </div>
+        </div>
+        <div class="form-group">
+          <label for="password">Password:</label>
+          <input type="password"
+                 class="form-control"
+                 id="password"
+                 formControlName="Password"
+                 [ngClass]="{'is-invalid':Password.invalid && Password.touched}">
+          <div class="invalid-feedback">
+            Enter a password
+          </div>
+        </div>
+        <div class="row justify-content-center">
+          <div class="form-group">
+            <div class="col-12">
+              <button class="btn btn-outline-primary btn-lg" type="submit" [disabled]="loginForm.invalid">Log In</button>
+            </div>
+            <div class="col-12" style="padding: 10px;">
+              <a style="padding: 18px;" routerLink="/Singup">Sing Up</a>
+            </div>
+          </div>
+        </div>
+      </form>
+    </div>
+</div>
