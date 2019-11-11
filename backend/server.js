@@ -3,6 +3,7 @@ const express = require('express');
 const bodyparser = require('body-parser');
 const mongoose = require('mongoose');
 const bcrypt = require('bcrypt');
+const jsonwebtoken = require('jsonwebtoken');
 
 // Import Project models
 const UsersModel = require('./Models/Users');
@@ -34,8 +35,8 @@ app.listen('8080', () => {
   console.log("App running on localhost:8080");
 });
 
-// Function to add a new User
-app.post('/api/addUser', (req, res, next) => {
+// Function to add a new User (Sign In)
+app.post('/api/signin', (req, res) => {
   let jsonUser = req.body   // Get the JSON body
   let missingAttr = null    // Function to get if a attr is missing
 
@@ -99,4 +100,57 @@ app.post('/api/addUser', (req, res, next) => {
       });
     });
   });
+});
+
+// Function to log in
+app.post('/api/login', (req, res) => {
+  // Get the user body
+  let nUser = req.body
+
+  // Check if there is a User with that email
+  UsersModel.findOne({ strEmail: nUser.strEmail },
+    // And just bring the name, user name, profile image and the password
+    ['strName', 'strUserName', 'imgProfile', 'strPassword']).exec(function (err, User) {
+
+      // If there is one...
+      if (User) {
+        // Compare the passwords
+        bcrypt.compare(nUser.strPassword, User.strPassword).then((isCorrect) => {
+          // If the comparission result (isCorrect) is true...
+          if (isCorrect) {
+
+            // Get the User Object from mongoose and 
+            // make it a JS Object
+            nUser = User.toObject()
+
+            // Delete all the no needed data
+            delete nUser._id
+            delete nUser.strPassword
+
+            // Make the token from the User object
+            jsonwebtoken.sign({ nUser }, 'SecretKey', (err, token) => {
+              // Return the succes code, the user information and the token
+              return res.status(200).json({
+                user: nUser,
+                token: token
+              });
+            });
+
+          // If the password is wrong...
+          } else {
+            // Return the error code
+            return res.status(401).json({
+              message: "ERROR: Wrong password"
+            });
+          }
+        });
+
+        // If there is no User with that email...
+      } else {
+        // Send the error message and code
+        return res.status(404).json({
+          message: `ERROR: There is no user with the email ${nUser.strEmail}`
+        });
+      }
+    });
 });

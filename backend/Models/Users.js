@@ -21,6 +21,7 @@ const Follow = new mongoose.Schema({
  *      strDescription: Optional description wrote by the user
  *      strLocation:    Optional user location
  *      imgBanner:      Name of the banner image
+ *      imgProfile:     Name of the profile image
  *      intFollowers:   Number of followers
  *      arrFollowers:   Array with followers data (Follower schemes)
  *      intFollowing:   Number of accounts followed
@@ -34,6 +35,7 @@ const userSchema = mongoose.Schema({
     strDescription: { type: String, required: false, default: null},
     strLocation: { type: String, required: false, default: null },
     imgBanner: { type: String, require: false, default: null },
+    imgProfile: { type: String, require: false, default: null },
     arrFollowers: [Follow],
     arrFollowing: [Follow]
 });
