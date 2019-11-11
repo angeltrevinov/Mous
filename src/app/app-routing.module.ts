@@ -5,6 +5,9 @@ import {LogInComponent} from './log-in/log-in.component';
 import {SingUpComponent} from './sing-up/sing-up.component';
 
 const routes: Routes = [
+  { path: '', redirectTo: '/Home', pathMatch: 'full'},
+  { path: '', loadChildren: () =>
+      import('./main/main.module').then(m => m.MainModule) },
   { path: 'Login', component: LogInComponent },
   { path: 'Singup', component: SingUpComponent }
 ];
