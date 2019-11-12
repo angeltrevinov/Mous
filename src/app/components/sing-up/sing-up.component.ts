@@ -1,5 +1,6 @@
 import { Component, OnInit } from '@angular/core';
 import {FormControl, FormGroup, Validators} from '@angular/forms';
+import {UsersService} from '../../services/users.service';
 
 @Component({
   selector: 'app-sing-up',
@@ -11,10 +12,12 @@ export class SingUpComponent implements OnInit {
   singupForm: FormGroup;
 
   //--------------------------------------------------------
-  constructor() { }
+  constructor(private usersService: UsersService) { }
 
   //--------------------------------------------------------
   ngOnInit() {
+
+    //Create the form Group with its controllers
     this.singupForm = new FormGroup({
       Name: new FormControl(null, {
         validators: [
@@ -52,6 +55,15 @@ export class SingUpComponent implements OnInit {
 
   //--------------------------------------------------------
   onSingUp() {
-    console.log('here');
+    this.usersService.onSingUp(
+      this.Name.value,
+      this.Username.value,
+      this.Email.value,
+      this.Password.value
+    ).subscribe((result) => {
+      console.log(result);
+    }, (error) => {
+      console.log(error);
+    });
   }
 }
