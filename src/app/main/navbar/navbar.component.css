@@ -1,9 +1,22 @@
 .portfolio-navbar.navbar {
-  box-shadow: 0 4px 10px rgba(0,0,0,.1);
+  box-shadow: 0 4px 10px rgba(255,255,255,.2);
   background-color: black;
 }
 
 .gradient {
   background: linear-gradient(120deg,#7f70f5,#0ea0ff);
   color: #fff;
+}
+
+.form-control {
+  background: linear-gradient(120deg,#7f70f5,#0ea0ff);
+  color: #fff;
+  border-color: white;
+}
+
+img {
+  width: 29px;
+  height: 29px;
+  border-radius: 50px;
+  margin-left: 17px;
 }

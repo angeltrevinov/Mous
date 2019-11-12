@@ -1,14 +1,35 @@
 <nav class="navbar navbar-dark navbar-expand-lg fixed-top bg-white portfolio-navbar gradient">
   <div class="container">
-    <a class="navbar-brand logo">Mous</a>
+    <a class="navbar-brand mx-auto logo">Mous</a>
     <button data-toggle="collapse" class="navbar-toggler" data-target="#navbarNav">
       <span class="sr-only">Toggle navigation</span>
       <span class="navbar-toggler-icon"></span>
     </button>
     <div class="collapse navbar-collapse" id="navbarNav">
       <ul class="nav navbar-nav ml-auto">
+        <li class="nav-item" style="height: 45px;">
+          <a class="nav-link" routerLink="/Login">
+            <div class="row">
+              <div class="col-lg-3 col-md-1 col-sm-2 col-2 ">
+                <img src="https://media1.tenor.com/images/050b34220716dcf8a74d070b6c80dead/tenor.gif?itemid=14605254" alt="">
+              </div>
+              <div class="col-lg-9 col-md-11 col-sm-10 col-10">
+                Mayoi Hachikuji
+              </div>
+            </div>
+          </a>
+        </li>
+        <li class="nav-item">
+          <form class="form-inline my-2 my-lg-0">
+            <input class="form-control mr-sm-2" type="search" placeholder="Search" aria-label="Search">
+            <button class="btn btn-outline-light my-2 my-sm-0" type="submit">Search</button>
+          </form>
+        </li>
         <li class="nav-item" role="presentation">
-          <a class="nav-link active">Home</a>
+          <a class="nav-link" routerLink="/Login">Login</a>
+        </li>
+        <li class="nav-item" role="presentation">
+          <a class="nav-link" routerLink="/Login">Logout</a>
         </li>
       </ul>
     </div>
