@@ -78,13 +78,23 @@ function searchInFollowers(arrFollowers, userName) {
 
 // ################# Server functions #################
 
+//Set headers for the requests
+//----------------------------------------------------------
+app.use((req, res, next) => {
+  res.header("Access-Control-Allow-Origin", '*');
+  res.header("Access-Control-Allow-Credentials", true);
+  res.header('Access-Control-Allow-Methods', 'GET,PUT,POST,DELETE,OPTIONS');
+  res.header("Access-Control-Allow-Headers", 'Origin,X-Requested-With,Content-Type,Accept,content-type,application/json');
+  next();
+});
+
 // Start the server
 app.listen('8080', () => {
   console.log("App running on localhost:8080");
 });
 
 // Function to add a new User (Sign In)
-app.post('/api/signin', (req, res) => {
+app.post('/api/user/Signin', (req, res) => {
   let jsonUser = req.body   // Get the JSON body
   let missingAttr = null    // Function to get if a attr is missing
 
@@ -102,13 +112,20 @@ app.post('/api/signin', (req, res) => {
     });
   }
 
+  if(jsonUser.strUserName[0] != '@'){
+    // Return the error code
+    return res.status(400).json({
+      message: `The user name must have an @ at the beginning`
+    });
+  }
+
   // Encrypt the password
   bcrypt.genSalt(10, function (err, salt) {
     bcrypt.hash(jsonUser.strPassword, salt, function (err, hash) {
 
       // Ensure the indexes were created in order to them be unique
       UsersModel.init().then(() => {
-        
+
         // Create the model
         const nUser = new UsersModel({
           strUserName: jsonUser.strUserName,
@@ -149,7 +166,7 @@ app.post('/api/signin', (req, res) => {
 
 
 // Function to log in
-app.post('/api/login', (req, res) => {
+app.post('/api/user/Login', (req, res) => {
   // Get the user body
   let nUser = req.body
 
