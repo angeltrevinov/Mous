@@ -10,9 +10,16 @@ export class UsersService {
   //--------------------------------------------------------
   constructor(private http: HttpClient) { }
 
-  /* Receives the info to create and response with a message */
+  /*
+  * SingUp
+  * @param strName: String name of the new user
+  * @param strUserName: String username of the new user
+  * @param strPassword: String the password of the new user
+  *
+  * @return Observable of the request
+  * */
   //--------------------------------------------------------
-  onSingUp(
+  SingUp(
     strName: string,
     strUserName: string,
     strEmail: string,
@@ -22,6 +29,23 @@ export class UsersService {
     return this.http.post(BACKENDUSER + '/signin', {
       strName,
       strUserName,
+      strEmail,
+      strPassword
+    });
+  }
+
+  /*
+  * Login
+  *
+  * @param strEmail: string with the email of the user to login
+  * @param strPassword: string with the password of the user
+  * */
+  //--------------------------------------------------------
+  Login(
+    strEmail: string,
+    strPassword: string
+  ) {
+    return this.http.post(BACKENDUSER + '/login', {
       strEmail,
       strPassword
     });
