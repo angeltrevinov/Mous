@@ -55,8 +55,7 @@ export class SingUpComponent implements OnInit {
 
   //--------------------------------------------------------
   onSingUp() {
-    console.log(this.Username.value);
-    /*this.usersService.SingUp(
+    this.usersService.SingUp(
       this.Name.value,
       '@' + this.Username.value,
       this.Email.value,
@@ -65,6 +64,6 @@ export class SingUpComponent implements OnInit {
       console.log(result);
     }, (error) => {
       console.log(error);
-    });*/
+    });
   }
 }

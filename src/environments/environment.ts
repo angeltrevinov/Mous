@@ -4,7 +4,7 @@
 
 export const environment = {
   production: false,
-  MousAPI: 'localhost:8080/api'
+  MousAPI: 'http://localhost:8080/api'
 };
 
 /*

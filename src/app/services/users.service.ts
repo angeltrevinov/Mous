@@ -2,7 +2,7 @@ import { Injectable } from '@angular/core';
 import {HttpClient} from '@angular/common/http';
 import {environment} from '../../environments/environment';
 
-const BACKENDUSER = environment.MousAPI;
+const BACKENDUSER = environment.MousAPI + '/user';
 
 @Injectable()
 export class UsersService {
@@ -26,7 +26,7 @@ export class UsersService {
     strPassword: string
   ) {
 
-    return this.http.post(BACKENDUSER + '/signin', {
+    return this.http.post(BACKENDUSER + '/Signin', {
       strName,
       strUserName,
       strEmail,
@@ -45,7 +45,7 @@ export class UsersService {
     strEmail: string,
     strPassword: string
   ) {
-    return this.http.post(BACKENDUSER + '/login', {
+    return this.http.post(BACKENDUSER + '/Login', {
       strEmail,
       strPassword
     });
