@@ -2,16 +2,6 @@
 const mongoose = require('mongoose');
 
 /**
- * Schema with the information about the Followers/Following users
- *      strUserName:    Acoount name (@)
- *      imgProfile:     String with the name of the profile image 
- */
-const Follow = new mongoose.Schema({
-    
-});
-
-
-/**
  * Schema with the User Information
  *      strUserName:    User account name (@)
  *      strName:        User name
