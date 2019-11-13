@@ -13,9 +13,3 @@
   color: #fff;
   border-color: white;
 }
-
-.page-body {
-  display: flex;
-  flex-direction: column;
-  height: 100%;
-}

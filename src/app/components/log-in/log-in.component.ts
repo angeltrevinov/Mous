@@ -10,9 +10,13 @@ import {UsersService} from '../../services/users.service';
 export class LogInComponent implements OnInit {
 
   loginForm: FormGroup;
+  strMessage: string;
+  strType: string;
 
   //--------------------------------------------------------
-  constructor(private usersService: UsersService) { }
+  constructor(
+    private usersService: UsersService
+  ) { }
 
   //--------------------------------------------------------
   ngOnInit() {
@@ -45,7 +49,10 @@ export class LogInComponent implements OnInit {
     ).subscribe((result) => {
       console.log(result);
     }, (error) => {
-      console.log(error);
+      this.strMessage = error.error.message;
+      this.strType = 'danger';
     });
+    this.strMessage = '';
+    this.strType = '';
   }
 }
