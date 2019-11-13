@@ -88,10 +88,12 @@ app.use((req, res, next) => {
   next();
 });
 
+
 // Start the server
 app.listen('8080', () => {
   console.log("App running on localhost:8080");
 });
+
 
 // Function to add a new User (Sign In)
 app.post('/api/user/Signin', (req, res) => {
@@ -112,7 +114,7 @@ app.post('/api/user/Signin', (req, res) => {
     });
   }
 
-  if(jsonUser.strUserName[0] != '@'){
+  if (jsonUser.strUserName[0] != '@') {
     // Return the error code
     return res.status(400).json({
       message: `The user name must have an @ at the beginning`
@@ -229,7 +231,7 @@ app.post('/api/user/Follow', verifyToken, (req, res) => {
       // Check if the user is not trying to follow himnself
       if (authData.nUser['strUserName'] != req.query.UserToFollow) {
 
-        // Check if Uset to follow exists
+        // Check if User to follow exists
         UsersModel.findOne({ strUserName: req.query.UserToFollow },
           ['strUserName', 'imgProfile', 'strEmail', 'arrFollowers'])
           .exec((err, toFollow) => {
@@ -292,6 +294,91 @@ app.post('/api/user/Follow', verifyToken, (req, res) => {
         // Return the error message
         return res.status(403)
           .json({ message: "You can not follow yourself" });
+      }
+
+    } else {
+      // Send the error message and code
+      return res.status(401)
+        .json({ message: `No logged in` });
+    }
+  })
+});
+
+
+// Function to unfollow another user
+app.post('/api/user/Unfollow', verifyToken, (req, res) => {
+  // To verify the JWT
+  jsonwebtoken.verify(req.token, 'SecretKey', (err, authData) => {
+    // Check that it is logged in
+    if (!err) {
+
+      console.log(req.query)
+
+      // Check if the user is not trying to unfollow himnself
+      if (authData.nUser['strUserName'] != req.query.UserToUnfollow) {
+
+        // Check if User to unFollow exists
+        UsersModel.findOne({ strUserName: req.query.UserToUnfollow },
+          ['strUserName', 'imgProfile', 'strEmail', 'arrFollowers'])
+          .exec((err, toUnfollow) => {
+
+            // Variable to know the unfollow proccess end correctly
+            let bUnfollowing = true;
+
+            // Check if the toUnfollow user exists
+            if (toUnfollow) {
+
+              // To check if the user is following the toUnfollow user
+              if (searchInFollowers(toUnfollow.arrFollowers, authData.nUser['strUserName'])) {
+
+                // Pull the follower object from the toUnfollow user array of followers
+                UsersModel.findOneAndUpdate(
+                  { strEmail: toUnfollow.strEmail },
+                  { $pull: { 'arrFollowers': { strUserName: authData.nUser['strUserName'] } } },
+
+                  // What to do after de update 
+                  // (It is needed to the update finish correctly)
+                  function (err, doc) { if (err) { bUnfollowing = false; } }
+                );
+
+                // Pull the toUnfollow user from the following array 
+                UsersModel.findOneAndUpdate(
+                  { strEmail: authData.nUser['strEmail'] },
+                  { $pull: { 'arrFollowing': { strUserName: toUnfollow.strUserName } } },
+
+                  // What to do after de update 
+                  // (It is needed to the update finish correctly)
+                  function (err, doc) { if (err) { bUnfollowing = false; } }
+                );
+
+                // Check if the objects were pull correctly
+                if (bUnfollowing) {
+
+                  // Return the succes code, the user information and the token
+                  return res.status(201)
+                    .json({ message: `Unfollowing ${req.query.UserToUnfollow}` });
+                }
+
+                // If the user already follows the toUnfollow user...
+              } else {
+                // Send the error message and code
+                return res.status(401)
+                  .json({ message: `You are not a ${toUnfollow.strUserName} follower` });
+              }
+
+              // If the toUnFollow user does not exist
+            } else {
+              // Return the error code
+              return res.status(404)
+                .json({ message: "User not found" });
+            }
+          });
+
+        // If the user try to unfollow himself
+      } else {
+        // Return the error message
+        return res.status(403)
+          .json({ message: "You can not unfollow yourself" });
       }
 
     } else {
