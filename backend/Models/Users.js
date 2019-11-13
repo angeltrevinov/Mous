@@ -11,9 +11,7 @@ const mongoose = require('mongoose');
  *      strLocation:    Optional user location
  *      imgBanner:      Name of the banner image
  *      imgProfile:     Name of the profile image
- *      intFollowers:   Number of followers
  *      arrFollowers:   Array with followers data (Follower schemes)
- *      intFollowing:   Number of accounts followed
  *      arrFollowing:   Array with information of the accounts followd (Follower schemes)
  */
 const userSchema = mongoose.Schema({

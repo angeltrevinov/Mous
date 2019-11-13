@@ -169,8 +169,20 @@ app.post('/api/user/Signin', (req, res) => {
 
 // Function to log in
 app.post('/api/user/Login', (req, res) => {
-  // Get the user body
-  let nUser = req.body
+  let nUser = req.body      // Get the user body
+  let missingAttr = null    // Function to get if a attr is missing
+
+  // Check if a parameter is missing
+  if (!jsonUser.strEmail) { missingAttr = "email" }
+  if (!jsonUser.strPassword) { missingAttr = "password" }
+
+  // Check if there was any missing parameter
+  if (missingAttr) {
+    // Return the error code
+    return res.status(406).json({
+      message: `The ${missingAttr} parameter is missing`
+    });
+  }
 
   // Check if there is a User with that email
   UsersModel.findOne({ strEmail: nUser.strEmail },
@@ -227,6 +239,14 @@ app.post('/api/user/Follow', verifyToken, (req, res) => {
   jsonwebtoken.verify(req.token, 'SecretKey', (err, authData) => {
     // Check that it is logged in
     if (!err) {
+
+      // Check the UserToFollow parameter exists
+      if (!req.query.UserToFollow) {
+        // Return the error code
+        return res.status(406).json({
+          message: `The UserToFollow parameter is missing`
+        });
+      }
 
       // Check if the user is not trying to follow himnself
       if (authData.nUser['strUserName'] != req.query.UserToFollow) {
@@ -312,7 +332,13 @@ app.post('/api/user/Unfollow', verifyToken, (req, res) => {
     // Check that it is logged in
     if (!err) {
 
-      console.log(req.query)
+      // Check the UserToUnfollow parameter exists
+      if (!req.query.UserToUnfollow) {
+        // Return the error code
+        return res.status(406).json({
+          message: `The UserToUnfollow parameter is missing`
+        });
+      }
 
       // Check if the user is not trying to unfollow himnself
       if (authData.nUser['strUserName'] != req.query.UserToUnfollow) {
@@ -388,3 +414,6 @@ app.post('/api/user/Unfollow', verifyToken, (req, res) => {
     }
   })
 });
+
+
+app.post('/')
