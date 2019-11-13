@@ -1,20 +1,22 @@
 <nav class="navbar navbar-dark navbar-expand-lg fixed-top bg-white portfolio-navbar gradient">
   <div class="container">
-    <a class="navbar-brand mx-auto logo">Mous</a>
+    <a class="navbar-brand mx-auto logo" routerLink="/Wall">Mous</a>
     <button data-toggle="collapse" class="navbar-toggler" data-target="#navbarNav">
       <span class="sr-only">Toggle navigation</span>
       <span class="navbar-toggler-icon"></span>
     </button>
     <div class="collapse navbar-collapse" id="navbarNav">
       <ul class="nav navbar-nav ml-auto">
-        <li class="nav-item" style="height: 45px;">
+        <li class="nav-item" style="height: 45px;" *ngIf="boolToken">
           <a class="nav-link" routerLink="/Login" style="padding-bottom: 0px !important;">
             <div class="row">
               <div class="col-lg-3 col-md-1 col-sm-2 col-2 ">
-                <img src="https://media1.tenor.com/images/050b34220716dcf8a74d070b6c80dead/tenor.gif?itemid=14605254" alt="">
+                <img
+                  onerror="this.onerror=null; this.src='../../../../assets/images/user.png'"
+                  src="{{ userDetails.user.imgProfile }}">
               </div>
               <div class="col-lg-9 col-md-11 col-sm-10 col-10">
-                Mayoi Hachikuji
+                {{ userDetails.user.strUserName }}
               </div>
             </div>
           </a>
@@ -25,11 +27,11 @@
             <button class="btn btn-outline-light my-2 my-sm-0" type="submit">Search</button>
           </form>
         </li>
-        <li class="nav-item" role="presentation">
+        <li class="nav-item" role="presentation" *ngIf="!boolToken">
           <a class="nav-link" routerLink="/Login">Login</a>
         </li>
-        <li class="nav-item" role="presentation">
-          <a class="nav-link" routerLink="/Login">Logout</a>
+        <li class="nav-item" role="presentation" *ngIf="boolToken">
+          <a class="nav-link" (click)="onLogOut()">Logout</a>
         </li>
       </ul>
     </div>

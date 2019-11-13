@@ -1,6 +1,7 @@
 import { Component, OnInit } from '@angular/core';
 import {FormControl, FormGroup, Validators} from '@angular/forms';
 import {UsersService} from '../../services/users.service';
+import {Router} from '@angular/router';
 
 @Component({
   selector: 'app-log-in',
@@ -15,7 +16,8 @@ export class LogInComponent implements OnInit {
 
   //--------------------------------------------------------
   constructor(
-    private usersService: UsersService
+    private usersService: UsersService,
+    private router: Router
   ) { }
 
   //--------------------------------------------------------
@@ -46,8 +48,9 @@ export class LogInComponent implements OnInit {
     this.usersService.Login(
       this.Email.value,
       this.Password.value
-    ).subscribe((result) => {
-      console.log(result);
+    ).subscribe((result: any) => {
+      localStorage.setItem('User', JSON.stringify(result));
+      this.router.navigate(['/']);
     }, (error) => {
       this.strMessage = error.error.message;
       this.strType = 'danger';
