@@ -1,8 +1,9 @@
-<div id="LoginContainer" class="row justify-content-center" style="margin-right: 0px !important;">
-    <div class="col-8 my-auto">
-      <div class="row justify-content-center">
-        <h2 style="color: white">MOUS</h2>
-      </div>
+<div class="container-fluid">
+  <div id="body-container" class="row justify-content-center">
+    <div class="col-12" style="padding: 20px; text-align: center;">
+      <h2 style="color: white" routerLink="/Wall">Mous</h2>
+    </div>
+    <div class="col-12">
       <form [formGroup]="loginForm" (submit)="onLogin()">
         <div class="form-group">
           <h3>Login</h3>
@@ -32,15 +33,16 @@
           </div>
         </div>
         <div class="row justify-content-center">
-          <div class="form-group">
-            <div class="col-12">
-              <button class="btn btn-outline-primary btn-lg" type="submit" [disabled]="loginForm.invalid">Log In</button>
-            </div>
-            <div class="col-12" style="padding: 10px;">
-              <a style="margin-left: 22px;" routerLink="/Singup">Sing Up</a>
-            </div>
-          </div>
+          <button class="btn btn-outline-primary btn-lg" type="submit" [disabled]="loginForm.invalid">Log In</button>
+        </div>
+        <div class="row justify-content-center">
+          <a routerLink="/Singup">Sing Up</a>
         </div>
       </form>
     </div>
+    <div class="col-12" style="padding: 20px; z-index: 999999;">
+      <app-alert [strMessage]="strMessage" [strType]="strType"></app-alert>
+    </div>
+  </div>
 </div>
+

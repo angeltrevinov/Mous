@@ -8,6 +8,8 @@ import {ReactiveFormsModule} from '@angular/forms';
 import { SingUpComponent } from './components/sing-up/sing-up.component';
 import {UsersService} from './services/users.service';
 import {HttpClientModule} from '@angular/common/http';
+import {SharedModule} from './shared/shared.module';
+import {RegistrationGuard} from './guards/registration.guard';
 
 @NgModule({
   declarations: [
@@ -19,9 +21,13 @@ import {HttpClientModule} from '@angular/common/http';
     BrowserModule,
     AppRoutingModule,
     ReactiveFormsModule,
-    HttpClientModule
+    HttpClientModule,
+    SharedModule
   ],
-  providers: [UsersService],
+  providers: [
+    UsersService,
+    RegistrationGuard,
+  ],
   bootstrap: [AppComponent]
 })
 export class AppModule { }

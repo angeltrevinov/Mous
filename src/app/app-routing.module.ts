@@ -3,13 +3,14 @@ import { CommonModule } from '@angular/common';
 import {RouterModule, Routes} from '@angular/router';
 import {LogInComponent} from './components/log-in/log-in.component';
 import {SingUpComponent} from './components/sing-up/sing-up.component';
+import {RegistrationGuard} from './guards/registration.guard';
 
 const routes: Routes = [
   { path: '', redirectTo: '', pathMatch: 'full'},
   { path: '', loadChildren: () =>
       import('./main/main.module').then(m => m.MainModule) },
-  { path: 'Login', component: LogInComponent },
-  { path: 'Singup', component: SingUpComponent }
+  { path: 'Login', component: LogInComponent, canActivate: [RegistrationGuard] },
+  { path: 'Singup', component: SingUpComponent, canActivate: [RegistrationGuard] }
 ];
 
 @NgModule({
