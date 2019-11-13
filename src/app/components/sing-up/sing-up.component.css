@@ -1,14 +1,21 @@
-#singupContainer {
-  background-image: url("../../../assets/images/artist.jpg");
-  background-position: center;
-  background-size: cover;
-  height: 100%;
-}
-
 form {
   background-color: rgb(64,64,64);
   padding: 20px;
   color: white;
   border-radius: 20px;
   box-shadow: 5px 5px 5px 5px rgba(0, 0, 0, 0.7);
+}
+
+.container-fluid {
+  height: 100%;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  background-image: url("../../../assets/images/artist.jpg");
+  background-position: center;
+  background-size: cover;
+}
+
+#body-container {
+  width: 80%;
 }
