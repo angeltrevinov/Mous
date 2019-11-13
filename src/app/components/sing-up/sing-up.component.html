@@ -1,78 +1,79 @@
-<div id="singupContainer" class="row justify-content-center" style="margin-right: 0px !important;">
-  <div class="col-8 my-auto">
-    <div class="row justify-content-center">
-      <h2 style="color: white">MOUS</h2>
+<div class="container-fluid">
+  <div id="body-container" class="row justify-content-center">
+    <div class="col-12" style="padding: 20px; text-align: center;">
+      <h2 style="color: white">Mous</h2>
     </div>
-    <form [formGroup]="singupForm" (submit)="onSingUp()">
-      <div class="form-group">
-        <h3>SingUp</h3>
-      </div>
-      <!-- Full Name -->
-      <div class="form-group">
-        <label for="FullName">Full Name:</label>
-        <input type="text"
-               class="form-control"
-               id="FullName"
-               placeholder="David Noel"
-               formControlName="Name"
-               [ngClass]="{'is-invalid': Name.invalid && Name.touched}">
-        <div class="invalid-feedback">
-          Please enter your name
+    <div class="col-12">
+      <form [formGroup]="singupForm" (submit)="onSingUp()">
+        <div class="form-group">
+          <h3>SingUp</h3>
         </div>
-      </div>
-      <!-- Username -->
-      <div class="form-group">
-        <label for="Username">Username:</label>
-        <div class="input-group mb-2">
-          <div class="input-group-prepend">
-            <div class="input-group-text">@</div>
-          </div>
+        <!-- Full Name -->
+        <div class="form-group">
+          <label for="FullName">Full Name:</label>
           <input type="text"
                  class="form-control"
-                 id="Username" placeholder="Username" formControlName="Username"
-                 [ngClass]="{'is-invalid': Username.invalid && Username.touched}">
+                 id="FullName"
+                 placeholder="David Noel"
+                 formControlName="Name"
+                 [ngClass]="{'is-invalid': Name.invalid && Name.touched}">
           <div class="invalid-feedback">
-            Please enter a username
+            Please enter your name
           </div>
         </div>
-      </div>
-      <!-- Email -->
-      <div class="form-group">
-        <label for="Email">Email:</label>
-        <input type="email"
-               class="form-control"
-               id="Email"
-               placeholder="email@mous.org"
-               formControlName="Email"
-               [ngClass]="{'is-invalid': Email.invalid && Email.touched}">
-        <div class="invalid-feedback">
-          Please enter a valid email
-        </div>
-      </div>
-      <!-- Password -->
-      <div class="form-group">
-        <label for="Password">Password:</label>
-        <input type="password"
-               class="form-control"
-               id="Password"
-               formControlName="Password"
-               placeholder="&bull;&bull;&bull;&bull;&bull;&bull;&bull;&bull;&bull;&bull;&bull;&bull;&bull;&bull;"
-               [ngClass]="{'is-invalid': Password.invalid && Password.touched }">
-        <div class="invalid-feedback">
-          Please enter a password to use
-        </div>
-      </div>
-      <!-- Buttons -->
-      <div class="row justify-content-center">
+        <!-- Username -->
         <div class="form-group">
-          <div class="col-12">
-            <button class="btn btn-outline-primary btn-lg" type="submit" [disabled]="singupForm.invalid">Sing Up</button>
-          </div>
-          <div class="col-12" style="padding: 10px;">
-            <a style="padding-left: 30px;" routerLink="/Login">Cancel</a>
+          <label for="Username">Username:</label>
+          <div class="input-group mb-2">
+            <div class="input-group-prepend">
+              <div class="input-group-text">@</div>
+            </div>
+            <input type="text"
+                   class="form-control"
+                   id="Username" placeholder="Username" formControlName="Username"
+                   [ngClass]="{'is-invalid': Username.invalid && Username.touched}">
+            <div class="invalid-feedback">
+              Please enter a username
+            </div>
           </div>
         </div>
-      </div>
-    </form>
+        <!-- Email -->
+        <div class="form-group">
+          <label for="Email">Email:</label>
+          <input type="email"
+                 class="form-control"
+                 id="Email"
+                 placeholder="email@mous.org"
+                 formControlName="Email"
+                 [ngClass]="{'is-invalid': Email.invalid && Email.touched}">
+          <div class="invalid-feedback">
+            Please enter a valid email
+          </div>
+        </div>
+        <!-- Password -->
+        <div class="form-group">
+          <label for="Password">Password:</label>
+          <input type="password"
+                 class="form-control"
+                 id="Password"
+                 formControlName="Password"
+                 placeholder="&bull;&bull;&bull;&bull;&bull;&bull;&bull;&bull;&bull;&bull;&bull;&bull;&bull;&bull;"
+                 [ngClass]="{'is-invalid': Password.invalid && Password.touched }">
+          <div class="invalid-feedback">
+            Please enter a password to use
+          </div>
+        </div>
+        <!-- Buttons -->
+        <div class="row justify-content-center">
+          <button class="btn btn-outline-primary btn-lg" type="submit" [disabled]="singupForm.invalid">Sing Up</button>
+        </div>
+        <div class="row justify-content-center">
+          <a routerLink="/Login">Cancel</a>
+        </div>
+      </form>
+    </div>
+    <div class="col-12" style="padding: 20px; z-index: 999999;">
+      <app-alert [strMessage]="strMessage" [strType]="strType"></app-alert>
+    </div>
   </div>
 </div>

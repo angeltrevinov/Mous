@@ -10,6 +10,8 @@ import {UsersService} from '../../services/users.service';
 export class SingUpComponent implements OnInit {
 
   singupForm: FormGroup;
+  strMessage: string;
+  strType: string;
 
   //--------------------------------------------------------
   constructor(private usersService: UsersService) { }
@@ -60,10 +62,14 @@ export class SingUpComponent implements OnInit {
       '@' + this.Username.value,
       this.Email.value,
       this.Password.value
-    ).subscribe((result) => {
-      console.log(result);
+    ).subscribe((result: any) => {
+      this.strMessage = result.message;
+      this.strType = 'primary';
     }, (error) => {
-      console.log(error);
+      this.strMessage = error.error.message;
+      this.strType = 'danger';
     });
+    this.strMessage = '';
+    this.strType = '';
   }
 }
