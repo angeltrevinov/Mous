@@ -7,13 +7,15 @@ import { SearchComponent } from './component/search/search.component';
 import { WallComponent } from './component/wall/wall.component';
 import {WallGuard} from '../guards/wall.guard';
 import {ReactiveFormsModule} from '@angular/forms';
+import { NotFoundComponent } from './component/not-found/not-found.component';
 
 @NgModule({
   declarations: [
     MainComponent,
     NavbarComponent,
     SearchComponent,
-    WallComponent
+    WallComponent,
+    NotFoundComponent
   ],
   imports: [
     CommonModule,
