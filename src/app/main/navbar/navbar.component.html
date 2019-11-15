@@ -10,20 +10,20 @@
         <li class="nav-item" style="height: 45px;" *ngIf="boolToken">
           <a class="nav-link" routerLink="/Login" style="padding-bottom: 0px !important;">
             <div class="row">
-              <div class="col-lg-3 col-md-1 col-sm-2 col-2 ">
+              <div class="col-lg-4 col-1">
                 <img
                   onerror="this.onerror=null; this.src='../../../../assets/images/user.png'"
                   src="{{ userDetails.user.imgProfile }}">
               </div>
-              <div class="col-lg-9 col-md-11 col-sm-10 col-10">
-                {{ userDetails.user.strUserName }}
+              <div class="col-lg-8 col-11 ml-auto">
+                {{ userDetails.user.strName }}
               </div>
             </div>
           </a>
         </li>
         <li class="nav-item">
-          <form class="form-inline my-2 my-lg-0">
-            <input class="form-control mr-sm-2" type="search" placeholder="Search" aria-label="Search">
+          <form [formGroup]="searchForm" (submit)="onSearch()"  class="form-inline my-2 my-lg-0">
+            <input class="form-control mr-sm-2" type="search" formControlName="SearchTerm" placeholder="Search" aria-label="Search">
             <button class="btn btn-outline-light my-2 my-sm-0" type="submit">Search</button>
           </form>
         </li>

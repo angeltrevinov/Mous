@@ -6,6 +6,7 @@ import {MainRoutingModule} from './main-routing.module';
 import { SearchComponent } from './component/search/search.component';
 import { WallComponent } from './component/wall/wall.component';
 import {WallGuard} from '../guards/wall.guard';
+import {ReactiveFormsModule} from '@angular/forms';
 
 @NgModule({
   declarations: [
@@ -16,7 +17,8 @@ import {WallGuard} from '../guards/wall.guard';
   ],
   imports: [
     CommonModule,
-    MainRoutingModule
+    MainRoutingModule,
+    ReactiveFormsModule
   ],
   providers: [
     WallGuard

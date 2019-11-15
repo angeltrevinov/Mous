@@ -10,7 +10,7 @@ const routes: Routes = [
   { path: '', component: MainComponent, children: [
       {path: '', redirectTo: 'Wall', pathMatch: 'full'},
       {path: 'Wall', component: WallComponent, canActivate: [WallGuard] },
-      {path: 'Search', component: SearchComponent }
+      {path: 'Search/:term', component: SearchComponent }
     ]
   }
 ];
