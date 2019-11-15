@@ -1,3 +1,7 @@
+.row {
+  height: 80vh;
+}
+
 #notfound {
   height: 100%;
   background: #030005;
