@@ -1,3 +1,18 @@
-<div class="container">
-  <p style="color: white"> {{ searchTerm }}</p>
+<div class="container-fluid">
+  <!-- Search Form -->
+  <form class="row" [formGroup]="searchForm" (submit)="onSearch()">
+    <div class="col-9 form-group">
+      <input type="text" class="form-control" placeholder="Search" formControlName="dataToSearch">
+    </div>
+    <div class="col-3 text-center">
+      <button class="btn btn-outline-light justify-content-center" type="submit">Hello</button>
+    </div>
+  </form>
+  <hr>
+  <!-- Search results -->
+  <div class="row">
+    <div class="col">
+      <app-user-info></app-user-info>
+    </div>
+  </div>
 </div>

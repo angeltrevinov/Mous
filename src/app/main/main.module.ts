@@ -9,6 +9,7 @@ import {WallGuard} from '../guards/wall.guard';
 import {ReactiveFormsModule} from '@angular/forms';
 import { NotFoundComponent } from './component/not-found/not-found.component';
 import { ProfileComponent } from './component/profile/profile.component';
+import { UserInfoComponent } from './component/search/user-info/user-info.component';
 
 @NgModule({
   declarations: [
@@ -17,7 +18,8 @@ import { ProfileComponent } from './component/profile/profile.component';
     SearchComponent,
     WallComponent,
     NotFoundComponent,
-    ProfileComponent
+    ProfileComponent,
+    UserInfoComponent,
   ],
   imports: [
     CommonModule,
