@@ -8,6 +8,7 @@ import { WallComponent } from './component/wall/wall.component';
 import {WallGuard} from '../guards/wall.guard';
 import {ReactiveFormsModule} from '@angular/forms';
 import { NotFoundComponent } from './component/not-found/not-found.component';
+import { ProfileComponent } from './component/profile/profile.component';
 
 @NgModule({
   declarations: [
@@ -15,7 +16,8 @@ import { NotFoundComponent } from './component/not-found/not-found.component';
     NavbarComponent,
     SearchComponent,
     WallComponent,
-    NotFoundComponent
+    NotFoundComponent,
+    ProfileComponent
   ],
   imports: [
     CommonModule,
