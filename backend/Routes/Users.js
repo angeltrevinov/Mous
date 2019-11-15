@@ -1,13 +1,11 @@
-// Import NodeJS Modules
 const express = require('express');
 const bcrypt = require('bcrypt');
 const jsonwebtoken = require('jsonwebtoken');
 
-// Import Project models
 const UsersModel = require('../Models/Users.js');
 
-// Express app
 const router = express.Router();
+
 
 // ################# Auxiliar functions #################
 
@@ -38,7 +36,6 @@ function verifyToken(req, res, next) {
     }
 }
 
-
 /**
  * Function to search in an array of followers if a user is already follower/following 
  * another user. 
@@ -62,20 +59,8 @@ function searchInFollowers(arrFollowers, userName) {
 }
 
 
-function searchUsersbyUserName(toSearch) {
-
-    console.log(toSearch);
-    
-    // Get all the non followers/following users
-    let result = UsersModel.find(
-        { strUserName: { $regex: toSearch, $options: 'i' } },
-        ['strName', 'strUserName', 'imgProfile']);
-
-    return result
-}
-
-
 // ################# Server functions #################
+
 // Function to add a new User (Sign In)
 router.post('/Signin', (req, res) => {
     let jsonUser = req.body   // Get the JSON body
@@ -148,7 +133,7 @@ router.post('/Signin', (req, res) => {
 });
 
 
-// Function to login
+// Function to log in
 router.post('/Login', (req, res) => {
     let nUser = req.body      // Get the user body
     let missingAttr = null    // Function to get if a attr is missing
@@ -397,36 +382,5 @@ router.post('/Unfollow', verifyToken, (req, res) => {
 });
 
 
-// Function to search more users
-router.get('/Search', (req, res, next) => {
-
-    // Check that the parameter exists
-    if (!req.query.toSearch) {
-        // Return the error code
-        return res.status(406).json({
-            message: `The toSearch parameter is missing`
-        });
-    }
-
-
-    let toSearch = req.query.toSearch;
-
-    let query = searchUsersbyUserName(toSearch);
-    query.exec(function(err,jedis){
-        if(err)
-           console.log(err);
-
-        if(jedis){
-            console.log(jedis)
-        }
-     });
-
-    return res.status(406).json({
-        message: `The toSearch parameter is missing`
-    });
-
-});
-
-
-// Export the enpoints
+// Export the routes
 module.exports = router;
