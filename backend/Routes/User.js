@@ -61,6 +61,44 @@ function searchInFollowers(arrFollowers, userName) {
     return false
 }
 
+/**
+ * Function to filter the users by the user name
+ * 
+ * @param {String}  toSearch Word you want to filter by
+ * @param {Integer} ByParameter Integer to know if the search is by User name (1) or by Name
+ */
+function searchUsers(toSearch, ByParameter) {
+
+    let result; // Query result
+
+    // Check if is a search by User Name
+    if (ByParameter == 1) {
+        // Get all the non followers/following users
+        result = UsersModel.find(
+            { strUserName: { $regex: toSearch, $options: 'i' } },
+            ['strName', 'strUserName', 'imgProfile']);
+
+        // Or if it is a search by Name
+    } else {
+        result = UsersModel.find(
+            { strName: { $regex: toSearch, $options: 'i' } },
+            ['strName', 'strUserName', 'imgProfile']);
+    }
+
+    return result
+}
+
+function filterObjectArray(arrToFilter, Attr) {
+    const Checked = new Set();
+
+    const filteredArr = arrToFilter.filter(el => {
+        const duplicate = Checked.has(el[Attr]);
+        Checked.add(el[Attr]);
+        return !duplicate;
+    });
+
+    return filteredArr;
+}
 
 // ################# Server functions #################
 // Function to add a new User (Sign In)
@@ -381,6 +419,63 @@ router.post('/Unfollow', verifyToken, (req, res) => {
                 .json({ message: `No logged in` });
         }
     })
+});
+
+
+// Function to search more users
+router.get('/Search', (req, res, next) => {
+
+    // Check that the parameter exists
+    if (!req.query.toSearch) {
+        // Return the error code
+        return res.status(406).json({
+            message: `The toSearch parameter is missing`
+        });
+    }
+
+    // The word the users are filtered
+    let toSearch = req.query.toSearch;
+
+    // To append the users
+    let toAppend = []
+
+    // Query that brings the users that begins with the toSearch variable
+    let byArroba = searchUsers("@" + toSearch, 1);
+    // Query that brings the users that contains the toSearch variable
+    let byUserName = searchUsers(toSearch, 1);
+    // Query that brings the users that contains the toSearch variable in its name
+    let byName = searchUsers(toSearch, 2);
+
+    // Execute the first query
+    byArroba.exec(function (err, Arrobas) {
+
+        // Append the resulting array
+        if (Arrobas) {
+            toAppend = toAppend.concat(Arrobas)
+        }
+
+        // Execute the second query
+        byUserName.exec(function (err, UserNames) {
+            // Append the resulting array
+            if (UserNames) {
+                toAppend = toAppend.concat(UserNames)
+            }
+
+            // Executing the thid query
+            byName.exec(function (err, Names) {
+                // Append the resulting array
+                toAppend = toAppend.concat(Names)
+
+                // Delete duplicates
+                toAppend = filterObjectArray(toAppend, 'strUserName');
+
+                // Send the correct code and the array with the results
+                return res.status(200).json({
+                    searchResult: toAppend
+                });
+            })
+        });
+    });
 });
 
 
