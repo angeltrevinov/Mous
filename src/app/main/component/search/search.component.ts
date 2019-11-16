@@ -24,6 +24,7 @@ export class SearchComponent implements OnInit {
       this.searchTerm = result.get('term');
     });
     this.formCreation();
+    this.DataToSearch.setValue(this.searchTerm);
   }
 
   /* FORM */
@@ -42,6 +43,7 @@ export class SearchComponent implements OnInit {
   //--------------------------------------------------------
   onSearch() {
     if (!this.searchForm.invalid) {
+      this.router.routeReuseStrategy.shouldReuseRoute = () => false;
       this.router.navigate(['/Search', this.DataToSearch.value]);
     }
   }
