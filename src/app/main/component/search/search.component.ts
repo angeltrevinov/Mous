@@ -1,6 +1,7 @@
 import { Component, OnInit } from '@angular/core';
 import {ActivatedRoute, ParamMap, Router} from '@angular/router';
 import {FormControl, FormGroup, Validators} from '@angular/forms';
+import {UsersService} from '../../../services/users.service';
 
 @Component({
   selector: 'app-search',
@@ -11,11 +12,14 @@ export class SearchComponent implements OnInit {
 
   searchTerm: string;
   searchForm: FormGroup;
+  searchResult: any [];
+  boolShowSpinner: boolean;
 
   //--------------------------------------------------------
   constructor(
     private route: ActivatedRoute,
-    private router: Router
+    private router: Router,
+    private usersService: UsersService
   ) { }
 
   //--------------------------------------------------------
@@ -23,8 +27,17 @@ export class SearchComponent implements OnInit {
     this.route.paramMap.subscribe((result: ParamMap) => {
       this.searchTerm = result.get('term');
     });
+    this.boolShowSpinner = true;
     this.formCreation();
     this.DataToSearch.setValue(this.searchTerm);
+    this.usersService.Search(this.searchTerm)
+      .subscribe((result: any) => {
+        this.searchResult = result.searchResult;
+        this.boolShowSpinner = false;
+      }, (error) => {
+        console.log(error);
+        this.boolShowSpinner = false;
+    });
   }
 
   /* FORM */

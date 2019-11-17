@@ -10,6 +10,7 @@ import {ReactiveFormsModule} from '@angular/forms';
 import { NotFoundComponent } from './component/not-found/not-found.component';
 import { ProfileComponent } from './component/profile/profile.component';
 import { UserInfoComponent } from './component/search/user-info/user-info.component';
+import {SharedModule} from '../shared/shared.module';
 
 @NgModule({
   declarations: [
@@ -24,7 +25,8 @@ import { UserInfoComponent } from './component/search/user-info/user-info.compon
   imports: [
     CommonModule,
     MainRoutingModule,
-    ReactiveFormsModule
+    ReactiveFormsModule,
+    SharedModule
   ],
   providers: [
     WallGuard

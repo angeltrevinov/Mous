@@ -4,14 +4,14 @@
       <img
         class="rounded-circle"
         onerror="this.onerror=null; this.src='../../../../assets/images/user.png'"
-        src="">
+        src="{{ user.imgProfile }}">
     </div>
     <div class="col-6" style="padding-right: 0px">
       <h5 style="margin-bottom: 0px">
-        Name
+        {{ user.strName }}
       </h5>
       <p style="margin-bottom: 0px">
-        Username
+        {{ user.strUserName }}
       </p>
       <p style="margin-bottom: 0px">
         description
@@ -19,7 +19,7 @@
     </div>
     <div class="col-3 text-center" style="padding-left: 0px">
       <button *ngIf="false" class="btn btn-outline-primary justify-content-center" type="button">Follow</button>
-      <button style="font-size: 1.7vmax;" *ngIf="true" class="btn btn-outline-danger justify-content-center" type="button">Unfollow</button>
+      <button style="font-size: 1.3vmax;" *ngIf="true" class="btn btn-outline-danger justify-content-center" type="button">Unfollow</button>
     </div>
   </div>
 </div>
