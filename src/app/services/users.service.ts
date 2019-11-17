@@ -1,5 +1,5 @@
 import { Injectable } from '@angular/core';
-import {HttpClient} from '@angular/common/http';
+import {HttpClient, HttpParams} from '@angular/common/http';
 import {environment} from '../../environments/environment';
 
 const BACKENDUSER = environment.MousAPI + '/user';
@@ -49,5 +49,18 @@ export class UsersService {
       strEmail,
       strPassword
     });
+  }
+
+  /*
+  * Search
+  *
+  * @strTerm: string the term to search for in user
+  * */
+  //--------------------------------------------------------
+  Search(
+    strTerm: string
+  ) {
+    const params = new HttpParams().set('toSearch', strTerm);
+    return this.http.get(BACKENDUSER + '/Search', {params});
   }
 }

@@ -6,17 +6,27 @@ import {MainRoutingModule} from './main-routing.module';
 import { SearchComponent } from './component/search/search.component';
 import { WallComponent } from './component/wall/wall.component';
 import {WallGuard} from '../guards/wall.guard';
+import {ReactiveFormsModule} from '@angular/forms';
+import { NotFoundComponent } from './component/not-found/not-found.component';
+import { ProfileComponent } from './component/profile/profile.component';
+import { UserInfoComponent } from './component/search/user-info/user-info.component';
+import {SharedModule} from '../shared/shared.module';
 
 @NgModule({
   declarations: [
     MainComponent,
     NavbarComponent,
     SearchComponent,
-    WallComponent
+    WallComponent,
+    NotFoundComponent,
+    ProfileComponent,
+    UserInfoComponent,
   ],
   imports: [
     CommonModule,
-    MainRoutingModule
+    MainRoutingModule,
+    ReactiveFormsModule,
+    SharedModule
   ],
   providers: [
     WallGuard

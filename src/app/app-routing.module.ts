@@ -7,10 +7,10 @@ import {RegistrationGuard} from './guards/registration.guard';
 
 const routes: Routes = [
   { path: '', redirectTo: '', pathMatch: 'full'},
-  { path: '', loadChildren: () =>
-      import('./main/main.module').then(m => m.MainModule) },
   { path: 'Login', component: LogInComponent, canActivate: [RegistrationGuard] },
-  { path: 'Singup', component: SingUpComponent, canActivate: [RegistrationGuard] }
+  { path: 'Singup', component: SingUpComponent, canActivate: [RegistrationGuard] },
+  { path: '', loadChildren: () =>
+      import('./main/main.module').then(m => m.MainModule) }
 ];
 
 @NgModule({
