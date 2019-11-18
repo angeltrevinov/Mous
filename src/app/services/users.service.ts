@@ -1,6 +1,7 @@
 import { Injectable } from '@angular/core';
 import {HttpClient, HttpParams} from '@angular/common/http';
 import {environment} from '../../environments/environment';
+import {stringify} from 'querystring';
 
 const BACKENDUSER = environment.MousAPI + '/user';
 
@@ -58,9 +59,32 @@ export class UsersService {
   * */
   //--------------------------------------------------------
   Search(
-    strTerm: string
+    strTerm: string,
+    intPage: number,
+    intCount: number
   ) {
-    const params = new HttpParams().set('toSearch', strTerm);
+    const params = new HttpParams()
+      .set('toSearch', strTerm)
+      .set('Page', intPage.toString())
+      .set('Count', intCount.toString());
     return this.http.get(BACKENDUSER + '/Search', {params});
+  }
+
+  //--------------------------------------------------------
+  Follow(
+    strUsername: string
+  ) {
+    const params = new HttpParams()
+      .set('UserToFollow' , strUsername);
+    return this.http.post(BACKENDUSER + '/Follow', {}, {params});
+  }
+
+  //--------------------------------------------------------
+  Unfollow(
+    strUsername: string
+  ) {
+    const params = new HttpParams()
+      .set('UserToUnfollow', strUsername);
+    return this.http.post(BACKENDUSER + '/Unfollow', {}, {params});
   }
 }

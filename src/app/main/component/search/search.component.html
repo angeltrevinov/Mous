@@ -16,8 +16,13 @@
         <app-user-info [user]="user"></app-user-info>
       </div>
     </div>
-    <div *ngIf="boolShowSpinner" class="col text-center">
+    <div *ngIf="boolShowSpinner" class="col-12 text-center">
       <app-spinner></app-spinner>
+    </div>
+    <div class="col-12 text-center">
+      <button class="btn btn-outline-light btn-lg" (click)="onShowMore()">
+        Show More
+      </button>
     </div>
     <div *ngIf="!boolShowSpinner && this.searchResult.length === 0" class="col text-center">
       No user found
