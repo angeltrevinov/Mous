@@ -24,9 +24,9 @@ function verifyToken(req, res, next) {
         // Split at the space
         const bearer = bearerHeader.split(' ');
         // Get token from array
-        const bearerToke = bearer[1];
+        const bearerToken = bearer[1];
         // Set the token
-        req.token = bearerToke;
+        req.token = bearerToken;
         // Next middleware
         next();
 
@@ -61,6 +61,7 @@ function searchInFollowers(arrFollowers, userName) {
     return false
 }
 
+
 /**
  * Function to filter the users by the user name
  * 
@@ -76,18 +77,24 @@ function searchUsers(toSearch, ByParameter) {
         // Get all the non followers/following users
         result = UsersModel.find(
             { strUserName: { $regex: toSearch, $options: 'i' } },
-            ['strName', 'strUserName', 'imgProfile']);
+            ['strName', 'strUserName', 'imgProfile', 'strDescription']);
 
         // Or if it is a search by Name
     } else {
         result = UsersModel.find(
             { strName: { $regex: toSearch, $options: 'i' } },
-            ['strName', 'strUserName', 'imgProfile']);
+            ['strName', 'strUserName', 'imgProfile', 'strDescription']);
     }
 
     return result
 }
 
+
+/**
+ * 
+ * @param {Array} arrToFilter Array of objects you want to filter
+ * @param {String} Attr Nombre del attributo por el que va a filtrar
+ */
 function filterObjectArray(arrToFilter, Attr) {
     const Checked = new Set();
 
@@ -100,11 +107,25 @@ function filterObjectArray(arrToFilter, Attr) {
     return filteredArr;
 }
 
+
+function getUserInfo(strUserName, parameter = null) {
+    console.log(strUserName);
+
+    // Check if User to follow exists
+    let result = UsersModel.findOne({ strUserName: strUserName },
+        //['strUserName', 'imgProfile', 'strEmail', 'arrFollowers'])
+        parameter
+    );
+
+    return result;
+}
+
+
 // ################# Server functions #################
 // Function to add a new User (Sign In)
 router.post('/Signin', (req, res) => {
     let jsonUser = req.body   // Get the JSON body
-    let missingAttr = null    // Function to get if a attr is missing
+    let missingAttr = null    // Var to get if a attr is missing
 
     // Check that the JSON object has the Name, Username, E-mail and Password
     if (!jsonUser.strName) { missingAttr = "name" }
@@ -176,7 +197,7 @@ router.post('/Signin', (req, res) => {
 // Function to login
 router.post('/Login', (req, res) => {
     let nUser = req.body      // Get the user body
-    let missingAttr = null    // Function to get if a attr is missing
+    let missingAttr = null    // Var to get if a attr is missing
 
     // Check if a parameter is missing
     if (!nUser.strEmail) { missingAttr = "email" }
@@ -424,19 +445,25 @@ router.post('/Unfollow', verifyToken, (req, res) => {
 
 // Function to search more users
 router.get('/Search', (req, res, next) => {
+    let missingAttr = null    // Var to get if a attr is missing
+
+    // Check if the server receive all the parameters
+    if (!req.query.toSearch) { missingAttr = "toSearch" }
+    if (!req.query.Page) { missingAttr = "Page" }
+    if (!req.query.Count) { missingAttr = "Count" }
 
     // Check that the parameter exists
-    if (!req.query.toSearch) {
+    if (missingAttr) {
         // Return the error code
         return res.status(406).json({
-            message: `The toSearch parameter is missing`
+            message: `The ${missingAttr} parameter is missing`
         });
     }
 
     // The word the users are filtered
     let toSearch = req.query.toSearch;
 
-    // To append the users
+    // To append all the users
     let toAppend = []
 
     // Query that brings the users that begins with the toSearch variable
@@ -446,22 +473,21 @@ router.get('/Search', (req, res, next) => {
     // Query that brings the users that contains the toSearch variable in its name
     let byName = searchUsers(toSearch, 2);
 
-    // Execute the first query
+    // Execute the first query that search by the UserName but at the begining 
     byArroba.exec(function (err, Arrobas) {
-
         // Append the resulting array
         if (Arrobas) {
             toAppend = toAppend.concat(Arrobas)
         }
 
-        // Execute the second query
+        // Execute the second query, search the users that include the word
         byUserName.exec(function (err, UserNames) {
             // Append the resulting array
             if (UserNames) {
                 toAppend = toAppend.concat(UserNames)
             }
 
-            // Executing the thid query
+            // Executing the thid query, search the users thath include the word in the name
             byName.exec(function (err, Names) {
                 // Append the resulting array
                 toAppend = toAppend.concat(Names)
@@ -469,10 +495,73 @@ router.get('/Search', (req, res, next) => {
                 // Delete duplicates
                 toAppend = filterObjectArray(toAppend, 'strUserName');
 
-                // Send the correct code and the array with the results
-                return res.status(200).json({
-                    searchResult: toAppend
-                });
+                // Check if the current user is logged in
+                if (typeof req.headers['authorization'] !== 'undefined') {
+                    // Verify the token
+                    // Split at the space
+                    const bearer = req.headers['authorization'].split(' ');
+                    // Get token from array
+                    const bearerToken = bearer[1];
+                    // Set the token
+                    req.token = bearerToken;
+
+                    // Verify the token
+                    jsonwebtoken.verify(req.token, 'SecretKey', (err, authData) => {
+
+                        // Check that it has the authentication data
+                        if (authData) {
+
+                            // Make the query to get the current user information
+                            currentUser = getUserInfo(authData.nUser['strUserName']);
+                            // Execute the query
+                            currentUser.exec((err, curUser) => {
+
+                                // Go through the toAppend array and check if the users are o not
+                                // in the arrFollowing array of the current user
+                                toAppend = toAppend.map(function (currentValue) {
+                                    Tempo = currentValue.toObject();        // Pass from Mongoose object to JS object
+                                    delete Tempo._id                        // Delete the id
+                                    // Check if it is in the following array
+                                    Tempo.bFollowing = searchInFollowers(curUser['arrFollowing'], Tempo.strUserName);
+                                    return Tempo;
+                                });
+
+                                // Calculate the number of users to send
+                                let iBegin = parseInt(req.query.Page) * parseInt(req.query.Count);
+                                let iFinal = iBegin + parseInt(req.query.Count);
+
+                                // Send the correct code and the array with the results
+                                return res.status(200)
+                                    .json({ searchResult: toAppend.slice(iBegin, iFinal) });
+                            });
+                        }
+                    });
+
+
+                    // If there is no user logged in
+                } else {
+
+                    // Delete duplicates
+                    toAppend = filterObjectArray(toAppend, 'strUserName');
+
+                    // Mar all the resul users as not following
+                    toAppend = toAppend.map(function (currentValue) {
+                        Tempo = currentValue.toObject();    // Pass it to a JS object
+                        Tempo.bFollowing = false;           // Mark as no following
+                        delete Tempo._id                    // Delete the _id attr
+                        return Tempo;
+                    });
+
+                    // Calculate the number of users to send
+                    let iBegin = parseInt(req.query.Page) * parseInt(req.query.Count);
+                    let iFinal = iBegin + parseInt(req.query.Count);
+
+                    // Send the correct code and the array with the results
+                    return res.status(200).json({
+                        searchResult: toAppend.slice(iBegin, iFinal)
+                    });
+                }
+
             })
         });
     });
