@@ -11,6 +11,8 @@ export class UserInfoComponent implements OnInit {
 
   @Input() user: any;
   userToken;
+  strMessage: string;
+  strType: string;
 
   //--------------------------------------------------------
   constructor(
@@ -29,12 +31,16 @@ export class UserInfoComponent implements OnInit {
     if (!this.userToken) {
       this.router.navigate(['/Login']);
     } else {
-      this.usersService.Follow(this.user.strUserName).subscribe((result) => {
+      this.usersService.Follow(this.user.strUserName).subscribe((result: any) => {
         this.user.bFollowing = true;
-        console.log(result);
+        this.strMessage = result.message;
+        this.strType = 'primary';
       }, (error) => {
-        console.log(error);
+        this.strMessage = error.error.message;
+        this.strType = 'danger';
       });
+      this.strMessage = '';
+      this.strType = '';
     }
   }
 
@@ -43,13 +49,17 @@ export class UserInfoComponent implements OnInit {
     if (!this.userToken) {
       this.router.navigate(['/Login']);
     } else {
-      this.usersService.Unfollow(this.user.strUserName).subscribe((result) => {
+      this.usersService.Unfollow(this.user.strUserName).subscribe((result: any) => {
         this.user.bFollowing = false;
-        console.log(result);
+        this.strMessage = result.message;
+        this.strType = 'primary';
       }, (error) => {
-        console.log(error);
+        this.strMessage = error.error.message;
+        this.strType = 'danger';
       });
     }
+    this.strMessage = '';
+    this.strType = '';
   }
 
 }
