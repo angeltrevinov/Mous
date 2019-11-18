@@ -69,4 +69,22 @@ export class UsersService {
       .set('Count', intCount.toString());
     return this.http.get(BACKENDUSER + '/Search', {params});
   }
+
+  //--------------------------------------------------------
+  Follow(
+    strUsername: string
+  ) {
+    const params = new HttpParams()
+      .set('UserToFollow' , strUsername);
+    return this.http.post(BACKENDUSER + '/Follow', {}, {params});
+  }
+
+  //--------------------------------------------------------
+  Unfollow(
+    strUsername: string
+  ) {
+    const params = new HttpParams()
+      .set('UserToUnfollow', strUsername);
+    return this.http.post(BACKENDUSER + '/Unfollow', {}, {params});
+  }
 }
