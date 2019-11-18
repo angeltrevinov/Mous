@@ -12,8 +12,10 @@ export class SearchComponent implements OnInit {
 
   searchTerm: string;
   searchForm: FormGroup;
-  searchResult: any [];
+  searchResult = [];
   boolShowSpinner: boolean;
+  intPage: number;
+  intCount: number;
 
   //--------------------------------------------------------
   constructor(
@@ -27,17 +29,11 @@ export class SearchComponent implements OnInit {
     this.route.paramMap.subscribe((result: ParamMap) => {
       this.searchTerm = result.get('term');
     });
-    this.boolShowSpinner = true;
     this.formCreation();
     this.DataToSearch.setValue(this.searchTerm);
-    this.usersService.Search(this.searchTerm)
-      .subscribe((result: any) => {
-        this.searchResult = result.searchResult;
-        this.boolShowSpinner = false;
-      }, (error) => {
-        console.log(error);
-        this.boolShowSpinner = false;
-    });
+    this.intPage = 0;
+    this.intCount = 5;
+    this.callSearchService();
   }
 
   /* FORM */
@@ -61,4 +57,21 @@ export class SearchComponent implements OnInit {
     }
   }
 
+  //--------------------------------------------------------
+  onShowMore() {
+    this.callSearchService();
+  }
+
+  //--------------------------------------------------------
+  callSearchService() {
+    this.boolShowSpinner = true;
+    this.usersService.Search(this.searchTerm, this.intPage, this.intCount)
+      .subscribe((result: any) => {
+        this.intPage = this.intPage + this.intCount;
+        this.searchResult = this.searchResult.concat(result.searchResult);
+        this.boolShowSpinner = false;
+      }, (error) => {
+        this.boolShowSpinner = false;
+      });
+  }
 }
