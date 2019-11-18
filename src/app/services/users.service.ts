@@ -72,6 +72,11 @@ export class UsersService {
     return this.http.get(BACKENDUSER + '/Search', {params});
   }
 
+  /*
+  * Follow
+  *
+  * @strUsername: string of the username to follow
+  * */
   //--------------------------------------------------------
   GetLogInInfo() {
     return this.http.get(BACKENDUSER + '/getLoginInfo');
