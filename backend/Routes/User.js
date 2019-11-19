@@ -42,9 +42,9 @@ function verifyToken(req, res, next) {
 
 /**
  * Function to search if a given user name is in an array of usernames but in string format
- * 
+ *
  * @param {Array} arrUsers An arry with the arrUsers object
- * @param {String} userName A string with the username you are looking 
+ * @param {String} userName A string with the username you are looking
  */
 function searchUserInStringArray(arrUsers, userName) {
 
@@ -59,7 +59,7 @@ function searchUserInStringArray(arrUsers, userName) {
 
 /**
  * Function to filter the users by the user name
- * 
+ *
  * @param {String}  toSearch Word you want to filter by
  * @param {Integer} ByParameter Integer to know if the search is by User name (1) or by Name
  */
@@ -86,9 +86,9 @@ function searchUsers(toSearch, ByParameter) {
 
 
 /**
- * 
+ *
  * Delete duplicates from an array
- * 
+ *
  * @param {Array} arrToFilter Array of objects you want to filter
  * @param {String} Attr Attr names you want to filter by
  */
@@ -108,7 +108,7 @@ function filterObjectArray(arrToFilter, Attr) {
 
 /**
  * Function to get the query about certain user
- * 
+ *
  * @param {String} userID User name of the user
  * @param {Array} parameter Attr you want to receive (If wants all, do not send this parameter)
  */
@@ -233,7 +233,7 @@ router.post('/Login', (req, res) => {
                     // If the comparission result (isCorrect) is true...
                     if (isCorrect) {
 
-                        // Get the User Object from mongoose and 
+                        // Get the User Object from mongoose and
                         // make it a JS Object
                         nUser = User.toObject()
 
@@ -354,7 +354,7 @@ router.post('/Follow', verifyToken, (req, res) => {
                                     { _id: toFollow._id },
                                     { $push: { 'arrFollowers': authData.nUser['_id'] } },
 
-                                    // What to do after de update 
+                                    // What to do after de update
                                     // (It is needed to the update finish correctly)
                                     function (err, doc) { if (err) { bFollowing = false; } }
                                 );
@@ -364,12 +364,12 @@ router.post('/Follow', verifyToken, (req, res) => {
                                     { _id: authData.nUser['_id'] },
                                     { $push: { 'arrFollowing': toFollow['_id'] } },
 
-                                    // What to do after de update 
+                                    // What to do after de update
                                     // (It is needed to the update finish correctly)
                                     function (err, doc) { if (err) { bFollowing = false; } }
                                 );
 
-                                // Check if the objects were 
+                                // Check if the objects were
                                 // add correctly to the databases
                                 if (bFollowing) {
 
@@ -446,17 +446,17 @@ router.post('/Unfollow', verifyToken, (req, res) => {
                                     { _id: toUnfollow._id },
                                     { $pull: { 'arrFollowers': authData.nUser['_id'] } },
 
-                                    // What to do after de update 
+                                    // What to do after de update
                                     // (It is needed to the update finish correctly)
                                     function (err, doc) { if (err) { bUnfollowing = false; } }
                                 );
 
-                                // Pull the toUnfollow user from the following array 
+                                // Pull the toUnfollow user from the following array
                                 UsersModel.findOneAndUpdate(
                                     { _id: authData.nUser['_id'] },
                                     { $pull: { 'arrFollowing': toUnfollow._id } },
 
-                                    // What to do after de update 
+                                    // What to do after de update
                                     // (It is needed to the update finish correctly)
                                     function (err, doc) { if (err) { bUnfollowing = false; } }
                                 );
@@ -530,7 +530,7 @@ router.get('/Search', (req, res, next) => {
     // Query that brings the users that contains the toSearch variable in its name
     let byName = searchUsers(toSearch, 2);
 
-    // Execute the first query that search by the UserName but at the begining 
+    // Execute the first query that search by the UserName but at the begining
     byArroba.exec(function (err, Arrobas) {
         // Append the resulting array
         if (Arrobas) {
