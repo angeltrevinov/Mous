@@ -1,0 +1,39 @@
+<div class="modal-dialog modal-dialog-centered" role="document">
+  <div class="modal-content">
+    <div class="modal-header">
+      <h5 class="modal-title" id="exampleModalLongTitle">Create a Post!</h5>
+      <button type="button" class="close" data-dismiss="modal" aria-label="Close" (click)="onCancel()">
+        <span aria-hidden="true" style="color: white">&times;</span>
+      </button>
+    </div>
+    <form [formGroup]="createForm">
+      <div class="modal-body">
+        <div class="form-group">
+          <textarea
+            cols="30"
+            rows="2"
+            class="form-control"
+            formControlName="Description"
+            placeholder="Whats on your mind?"
+            [ngClass]="{'is-invalid': Description.invalid && Description.touched}"></textarea>
+          <div class="invalid-feedback">
+            Please enter a description
+          </div>
+        </div>
+        <div class="form-group">
+          <button type="button" (click)="filePicker.click()">Pick Image</button>
+          <input type="file" #filePicker (change)="onImagePick($event)">
+        </div>
+        <div class="row" *ngIf="myImagePreview && Images.valid">
+          <div class="image-preview" *ngFor="let img of myImagePreview">
+            <img [src]="img">
+          </div>
+        </div>
+      </div>
+      <div class="modal-footer">
+        <button type="button" class="btn btn-secondary" data-dismiss="modal">Cancel</button>
+        <button type="button" class="btn btn-primary" (click)="onCancel()">Create</button>
+      </div>
+    </form>
+  </div>
+</div>

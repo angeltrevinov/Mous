@@ -7,9 +7,18 @@ import { Component, OnInit } from '@angular/core';
 })
 export class MainComponent implements OnInit {
 
+  boolSingIn: boolean;
+
+  //--------------------------------------------------------
   constructor() { }
 
+  //--------------------------------------------------------
   ngOnInit() {
+    if (localStorage.getItem('User')) {
+      this.boolSingIn = true;
+    } else {
+      this.boolSingIn = false;
+    }
   }
 
 }
