@@ -72,6 +72,11 @@ export class UsersService {
     return this.http.get(BACKENDUSER + '/Search', {params});
   }
 
+  //--------------------------------------------------------
+  GetLogInInfo() {
+    return this.http.get(BACKENDUSER + '/getLoginInfo');
+  }
+
   /*
   * Follow
   *
