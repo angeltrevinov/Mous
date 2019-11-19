@@ -12,6 +12,7 @@ export class NavbarComponent implements OnInit {
 
   boolToken: boolean;
   userInfo: any;
+  userRecieve: boolean;
   searchForm: FormGroup;
 
   // --------------------------------------------------------
@@ -36,8 +37,11 @@ export class NavbarComponent implements OnInit {
   validateToken() {
     if (localStorage.getItem('User')) {
       this.boolToken = true;
+      this.userRecieve = false;
       this.usersService.GetLogInInfo().subscribe((result) => {
+        console.log(result);
         this.userInfo = result;
+        this.userRecieve = true;
       });
     } else {
       this.boolToken = false;
