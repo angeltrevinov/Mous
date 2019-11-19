@@ -39,7 +39,6 @@ export class NavbarComponent implements OnInit {
       this.boolToken = true;
       this.userRecieve = false;
       this.usersService.GetLogInInfo().subscribe((result) => {
-        console.log(result);
         this.userInfo = result;
         this.userRecieve = true;
       });
