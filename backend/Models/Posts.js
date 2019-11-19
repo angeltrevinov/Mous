@@ -34,11 +34,8 @@ const Comments = new mongoose.Schema({
  *      arrLikes:       Array of author schemas
  */
 const postSchema = mongoose.Schema({
-    objAuthor: {
-        strUserName: { type: String, required: true }, //@
-        imgProfile: { type: String, require: true },
-    },
-    strDescription: { type: String, required: true },
+    strAuthor: { type: String, required: true },
+    strDescription: { type: String, required: false, default: null },
     datePublished: { type: Date, required: true },
     arrMedia: [String],
     arrComments: [Comments],
