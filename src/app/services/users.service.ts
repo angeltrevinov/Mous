@@ -88,36 +88,6 @@ export class UsersService {
   * @strUsername: string of the username to follow
   * */
   //--------------------------------------------------------
-  GetLogInInfo() {
-    return this.http.get(BACKENDUSER + '/getLoginInfo');
-  }
-
-  /*
-  * Follow
-  *
-  * @strUsername: string of the username to follow
-  * */
-  //--------------------------------------------------------
-  GetLogInInfo() {
-    return this.http.get(BACKENDUSER + '/getLoginInfo');
-  }
-
-  /*
-  * Follow
-  *
-  * @strUsername: string of the username to follow
-  * */
-  //--------------------------------------------------------
-  GetLogInInfo() {
-    return this.http.get(BACKENDUSER + '/getLoginInfo');
-  }
-
-  /*
-  * Follow
-  *
-  * @strUsername: string of the username to follow
-  * */
-  //--------------------------------------------------------
   Follow(
     strUsername: string
   ) {
