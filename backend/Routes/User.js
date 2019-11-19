@@ -282,13 +282,19 @@ router.get('/getLoginInfo', verifyToken, (req, res) => {
             // Execute the query
             queryUser.exec((err, currentUser) => {
 
+                // Built the server url
+                const url = req.protocol + '://' + req.get("host");
+
+                // Built the image path
+                const path = url + '/Post_Images/' + currentUser.strUserName + '/' + currentUser.imgProfile
+
                 // If everything was fine..
                 if (currentUser) {
                     // Return the success code and the data
-                    return res.status(401)
+                    return res.status(201)
                         .json({
                             strUserName: currentUser.strUserName,
-                            imgProfile: currentUser.imgProfile
+                            imgProfile: path
                         });
 
                     // If there was an error..
