@@ -56,6 +56,8 @@ export class UsersService {
   * Search
   *
   * @strTerm: string the term to search for in user
+  * @intPage: number the page we want to show
+  * @intCount number how many results we want
   * */
   //--------------------------------------------------------
   Search(
@@ -70,6 +72,21 @@ export class UsersService {
     return this.http.get(BACKENDUSER + '/Search', {params});
   }
 
+  /*
+  * Follow
+  *
+  * @strUsername: string of the username to follow
+  * */
+  //--------------------------------------------------------
+  GetLogInInfo() {
+    return this.http.get(BACKENDUSER + '/getLoginInfo');
+  }
+
+  /*
+  * Follow
+  *
+  * @strUsername: string of the username to follow
+  * */
   //--------------------------------------------------------
   Follow(
     strUsername: string
@@ -79,6 +96,11 @@ export class UsersService {
     return this.http.post(BACKENDUSER + '/Follow', {}, {params});
   }
 
+  /*
+  * UnFollow
+  *
+  * @strUsername: string of the username to unfollow
+  * */
   //--------------------------------------------------------
   Unfollow(
     strUsername: string
