@@ -1,6 +1,7 @@
 import { Component, OnInit } from '@angular/core';
 import {FormControl, FormGroup, Validators} from '@angular/forms';
 import {mimeType} from './mime-type.validator';
+import {invalid} from '@angular/compiler/src/render3/view/util';
 
 @Component({
   selector: 'app-create-post',
@@ -48,25 +49,31 @@ export class CreatePostComponent implements OnInit {
   onCancel() {
     this.createForm.reset();
     this.myImagePreview = [];
+    this.arrFiles = [];
   }
 
   //--------------------------------------------------------
   onImagePick(event: Event) {
 
-    const file = (event.target as HTMLInputElement).files[0];
-    if(file) {
-      this.arrFiles.push(file);
+    if(this.arrFiles.length < 5) {
+      const file = (event.target as HTMLInputElement).files[0];
+      if(file) {
+        this.arrFiles.push(file);
+      }
+      this.createForm.patchValue({ Images: this.arrFiles});
+      this.Images.updateValueAndValidity();
+      if(this.Images.invalid) {
+        this.arrFiles.pop();
+        this.createForm.patchValue({ Images: this.arrFiles});
+      }
+      this.arrFiles.forEach((doc) => {
+        const reader = new FileReader();
+        this.myImagePreview.splice(0);
+        reader.onload = () => {
+          this.myImagePreview.push(reader.result);
+        };
+        reader.readAsDataURL(doc);
+      });
     }
-    this.createForm.patchValue({ Images: this.arrFiles});
-    this.Images.updateValueAndValidity();
-    this.arrFiles.forEach((doc) => {
-      const reader = new FileReader();
-      this.myImagePreview.splice(0);
-      reader.onload = () => {
-        this.myImagePreview.push(reader.result);
-      };
-      reader.readAsDataURL(doc);
-    });
   }
-
 }
