@@ -238,7 +238,7 @@ router.post('/Login', (req, res) => {
                         nUser = User.toObject()
 
                         // Delete all the no needed data
-                        delete nUser.strPassword    
+                        delete nUser.strPassword
 
                         // Make the token from the User object
                         jsonwebtoken.sign({ nUser }, 'SecretKey', (err, token) => {
@@ -265,6 +265,48 @@ router.post('/Login', (req, res) => {
                 });
             }
         });
+});
+
+
+// Get the user name and the profile image
+router.get('/getLoginInfo', verifyToken, (req, res) => {
+
+    // To verify the JWT
+    jsonwebtoken.verify(req.token, 'SecretKey', (err, authData) => {
+        // Check that it is logged in
+        if (!err) {
+
+            // Make the query
+            const queryUser = getUserInfo(authData.nUser['_id'], ['strUserName', 'strName', 'imgProfile']);
+
+            // Execute the query
+            queryUser.exec((err, currentUser) => {
+
+                // If everything was fine..
+                if (currentUser) {
+                    // Return the success code and the data
+                    return res.status(401)
+                        .json({
+                            strUserName: currentUser.strUserName,
+                            imgProfile: currentUser.imgProfile
+                        });
+
+                    // If there was an error..
+                } else {
+                    // Return the error code
+                    return res.status(404)
+                        .json({ message: "User not found" });
+                }
+            });
+
+        } else {
+            // Send the error message and code
+            return res.status(401)
+                .json({ message: `No logged in` });
+        }
+
+    });
+
 });
 
 
