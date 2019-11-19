@@ -11,6 +11,7 @@ import { NotFoundComponent } from './component/not-found/not-found.component';
 import { ProfileComponent } from './component/profile/profile.component';
 import { UserInfoComponent } from './component/search/user-info/user-info.component';
 import {SharedModule} from '../shared/shared.module';
+import { CreatePostComponent } from './component/create-post/create-post.component';
 
 @NgModule({
   declarations: [
@@ -21,6 +22,7 @@ import {SharedModule} from '../shared/shared.module';
     NotFoundComponent,
     ProfileComponent,
     UserInfoComponent,
+    CreatePostComponent,
   ],
   imports: [
     CommonModule,
