@@ -41,21 +41,15 @@ function verifyToken(req, res, next) {
 
 
 /**
- * Function to search in a given array of User objects if a user is already follower/following 
- * another user. 
+ * Function to search if a given user name is in an array of usernames but in string format
  * 
- * @param {Array} arrUsers It is an arry with the arrUsers object
- * @param {String} userName It is an string with the username you are looking 
+ * @param {Array} arrUsers An arry with the arrUsers object
+ * @param {String} userName A string with the username you are looking 
  */
-function searchUserInArray(arrUsers, userName) {
-
-    // Map the follower object array to an array with just the user names
-    let tempUsers = arrUsers.map((Follower) => {
-        return Follower.strUserName;
-    });
+function searchUserInStringArray(arrUsers, userName) {
 
     // Check if the username it is in that array
-    if (tempUsers.find((elem) => { return (elem == userName) })) {
+    if (arrUsers.find((elem) => { return (elem == userName) })) {
         return true
     }
 
@@ -78,13 +72,13 @@ function searchUsers(toSearch, ByParameter) {
         // Get all the non followers/following users
         result = UsersModel.find(
             { strUserName: { $regex: toSearch, $options: 'i' } },
-            ['strName', 'strUserName', 'imgProfile', 'strDescription']);
+            ['strName', 'strUserName', 'imgProfile', 'strDescription', '_id']);
 
         // Or if it is a search by Name
     } else {
         result = UsersModel.find(
             { strName: { $regex: toSearch, $options: 'i' } },
-            ['strName', 'strUserName', 'imgProfile', 'strDescription']);
+            ['strName', 'strUserName', 'imgProfile', 'strDescription', '_id']);
     }
 
     return result
@@ -96,10 +90,11 @@ function searchUsers(toSearch, ByParameter) {
  * Delete duplicates from an array
  * 
  * @param {Array} arrToFilter Array of objects you want to filter
- * @param {String} Attr Nombre del attributo por el que va a filtrar
+ * @param {String} Attr Attr names you want to filter by
  */
 function filterObjectArray(arrToFilter, Attr) {
     const Checked = new Set();
+
 
     const filteredArr = arrToFilter.filter(el => {
         const duplicate = Checked.has(el[Attr]);
@@ -114,14 +109,13 @@ function filterObjectArray(arrToFilter, Attr) {
 /**
  * Function to get the query about certain user
  * 
- * @param {String} strUserName User name of the user
+ * @param {String} userID User name of the user
  * @param {Array} parameter Attr you want to receive (If wants all, do not send this parameter)
  */
-function getUserInfo(strUserName, parameter = null) {
+function getUserInfo(userID, parameter = null) {
 
     // Check if User to follow exists
-    let result = UsersModel.findOne({ strUserName: strUserName },
-        //['strUserName', 'imgProfile', 'strEmail', 'arrFollowers'])
+    let result = UsersModel.findOne({ _id: userID },
         parameter
     );
 
@@ -290,11 +284,11 @@ router.post('/Follow', verifyToken, (req, res) => {
             }
 
             // Check if the user is not trying to follow himnself
-            if (authData.nUser['strUserName'] != req.query.UserToFollow) {
+            if (authData.nUser['_id'] != req.query.UserToFollow) {
 
                 // Check if User to follow exists
-                UsersModel.findOne({ strUserName: req.query.UserToFollow },
-                    ['strUserName', 'imgProfile', 'arrFollowers'])
+                UsersModel.findOne({ _id: req.query.UserToFollow },
+                    ['arrFollowers', '_id', 'strUserName'])
                     .exec((err, toFollow) => {
 
                         // Variable to know the follow proccess end correctly
@@ -304,12 +298,12 @@ router.post('/Follow', verifyToken, (req, res) => {
                         if (toFollow) {
 
                             // To check if the user is not already following the toFollow user
-                            if (!searchUserInArray(toFollow.arrFollowers, authData.nUser['strUserName'])) {
+                            if (!searchUserInStringArray(toFollow.arrFollowers, authData.nUser['_id'])) {
 
                                 // Push the new follower object to the ToFollow User
                                 UsersModel.findOneAndUpdate(
-                                    { strUserName: toFollow.strUserName },
-                                    { $push: { 'arrFollowers': authData.nUser } },
+                                    { _id: toFollow._id },
+                                    { $push: { 'arrFollowers': authData.nUser['_id'] } },
 
                                     // What to do after de update 
                                     // (It is needed to the update finish correctly)
@@ -318,8 +312,8 @@ router.post('/Follow', verifyToken, (req, res) => {
 
                                 // Push the new following object to the Following User
                                 UsersModel.findOneAndUpdate(
-                                    { strUserName: authData.nUser['strUserName'] },
-                                    { $push: { 'arrFollowing': toFollow } },
+                                    { _id: authData.nUser['_id'] },
+                                    { $push: { 'arrFollowing': toFollow['_id'] } },
 
                                     // What to do after de update 
                                     // (It is needed to the update finish correctly)
@@ -332,7 +326,7 @@ router.post('/Follow', verifyToken, (req, res) => {
 
                                     // Return the succes code, the user information and the token
                                     return res.status(201)
-                                        .json({ message: `Following ${req.query.UserToFollow}` });
+                                        .json({ message: `Following ${toFollow.strUserName}` });
                                 }
 
                                 // If the user already follows the toFollow user...
@@ -382,11 +376,11 @@ router.post('/Unfollow', verifyToken, (req, res) => {
             }
 
             // Check if the user is not trying to unfollow himnself
-            if (authData.nUser['strUserName'] != req.query.UserToUnfollow) {
+            if (authData.nUser['_id'] != req.query.UserToUnfollow) {
 
                 // Check if User to unFollow exists
-                UsersModel.findOne({ strUserName: req.query.UserToUnfollow },
-                    ['strUserName', 'imgProfile', 'arrFollowers'])
+                UsersModel.findOne({ _id: req.query.UserToUnfollow },
+                    ['_id', 'strUserName', 'arrFollowers'])
                     .exec((err, toUnfollow) => {
 
                         // Variable to know the unfollow proccess end correctly
@@ -396,12 +390,12 @@ router.post('/Unfollow', verifyToken, (req, res) => {
                         if (toUnfollow) {
 
                             // To check if the user is following the toUnfollow user
-                            if (searchUserInArray(toUnfollow.arrFollowers, authData.nUser['strUserName'])) {
+                            if (searchUserInStringArray(toUnfollow.arrFollowers, authData.nUser['_id'])) {
 
                                 // Pull the follower object from the toUnfollow user array of followers
                                 UsersModel.findOneAndUpdate(
-                                    { strUserName: toUnfollow.strUserName },
-                                    { $pull: { 'arrFollowers': { strUserName: authData.nUser['strUserName'] } } },
+                                    { _id: toUnfollow._id },
+                                    { $pull: { 'arrFollowers': authData.nUser['_id'] } },
 
                                     // What to do after de update 
                                     // (It is needed to the update finish correctly)
@@ -410,8 +404,8 @@ router.post('/Unfollow', verifyToken, (req, res) => {
 
                                 // Pull the toUnfollow user from the following array 
                                 UsersModel.findOneAndUpdate(
-                                    { strUserName: authData.nUser['strUserName'] },
-                                    { $pull: { 'arrFollowing': { strUserName: toUnfollow.strUserName } } },
+                                    { _id: authData.nUser['_id'] },
+                                    { $pull: { 'arrFollowing': toUnfollow._id } },
 
                                     // What to do after de update 
                                     // (It is needed to the update finish correctly)
@@ -423,7 +417,7 @@ router.post('/Unfollow', verifyToken, (req, res) => {
 
                                     // Return the succes code, the user information and the token
                                     return res.status(201)
-                                        .json({ message: `Unfollowing ${req.query.UserToUnfollow}` });
+                                        .json({ message: `Unfollowing ${toUnfollow.strUserName}` });
                                 }
 
                                 // If the user is not following the toUnfollow user...
@@ -526,7 +520,7 @@ router.get('/Search', (req, res, next) => {
                         if (!err) {
 
                             // Make the query to get the current user information
-                            currentUser = getUserInfo(authData.nUser['strUserName']);
+                            currentUser = getUserInfo(authData.nUser['_id']);
                             // Execute the query
                             currentUser.exec((err, curUser) => {
 
@@ -534,9 +528,8 @@ router.get('/Search', (req, res, next) => {
                                 // in the arrFollowing array of the current user
                                 toAppend = toAppend.map(function (currentValue) {
                                     Tempo = currentValue.toObject();        // Pass from Mongoose object to JS object
-                                    delete Tempo._id                        // Delete the id
                                     // Check if it is in the following array
-                                    Tempo.bFollowing = searchUserInArray(curUser['arrFollowing'], Tempo.strUserName);
+                                    Tempo.bFollowing = searchUserInStringArray(curUser['arrFollowing'], Tempo._id);
                                     return Tempo;
                                 });
 
@@ -562,7 +555,6 @@ router.get('/Search', (req, res, next) => {
                     toAppend = toAppend.map(function (currentValue) {
                         Tempo = currentValue.toObject();    // Pass it to a JS object
                         Tempo.bFollowing = false;           // Mark as no following
-                        delete Tempo._id                    // Delete the _id attr
                         return Tempo;
                     });
 

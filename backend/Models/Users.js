@@ -1,17 +1,6 @@
 // Imports
 const mongoose = require('mongoose');
 
-/**	
- * Schema with the information about the Followers/Following users	
- *      strUserName:    Acoount name (@)	
- *      imgProfile:     String with the name of the profile image 	
- */
-const Follow = new mongoose.Schema({
-    strUserName: { type: String, required: true },
-    imgProfile: { type: String, require: true }
-});
-
-
 /**
  * Schema with the User Information
  *      strUserName:    User account name (@)
@@ -34,8 +23,8 @@ const userSchema = mongoose.Schema({
     strLocation: { type: String, required: false, default: null },
     imgBanner: { type: String, require: false, default: "emptyProfile" },
     imgProfile: { type: String, require: false, default: "emptyBanner" },
-    arrFollowers: [Follow],
-    arrFollowing: [Follow]
+    arrFollowers: [{type: String, required: true}],
+    arrFollowing: [{type: String, required: true}]
 });
 
 // Export the models with the respective Collection

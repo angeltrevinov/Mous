@@ -155,7 +155,7 @@ router.post('/MakePost', verifyToken, (req, res, next) => {
 
                         // Create the new post model
                         let newPost = new PostModel({
-                            strAuthor: authData.nUser['strUserName'],
+                            strAuthorID: authData.nUser['_id'],
                             datePublished: postBody.datePublished,
                             strDescription: postBody.strDescription,
                             arrMedia: arrMedia
@@ -215,12 +215,12 @@ router.put('/Like', verifyToken, (req, res, next) => {
                 .exec((err, toLike) => {
                     if (toLike) {
 
-                        if (!searchUserInStringArray(toLike['arrLikes'], authData.nUser['strUserName'])) {
+                        if (!searchUserInStringArray(toLike['arrLikes'], authData.nUser['_id'])) {
 
                             // Pull the follower object from the toUnfollow user array of followers
                             PostModel.findOneAndUpdate(
                                 { _id: req.query.postID },
-                                { $push: { 'arrLikes': authData.nUser['strUserName'] } },
+                                { $push: { 'arrLikes': authData.nUser['_id'] } },
 
                                 // What to do after de update 
                                 // (It is needed to the update finish correctly)
@@ -281,12 +281,12 @@ router.put('/Unlike', verifyToken, (req, res, next) => {
                 // If the post exists..
                 if (toLike) {
                     // Check if the user liked or not this post before
-                    if (searchUserInStringArray(toLike['arrLikes'], authData.nUser['strUserName'])) {
+                    if (searchUserInStringArray(toLike['arrLikes'], authData.nUser['_id'])) {
 
                         // Pull the follower object from the toUnfollow user array of followers
                         PostModel.findOneAndUpdate(
                             { _id: req.query.postID },
-                            { $pull: { 'arrLikes': authData.nUser['strUserName'] } },
+                            { $pull: { 'arrLikes': authData.nUser['_id'] } },
 
                             // Callback function
                             function (err, doc) {
