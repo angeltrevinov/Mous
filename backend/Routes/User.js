@@ -2,6 +2,7 @@
 const express = require('express');
 const bcrypt = require('bcrypt');
 const jsonwebtoken = require('jsonwebtoken');
+const fs = require('fs')
 
 // Import Project models
 const UsersModel = require('../Models/Users.js');
@@ -92,6 +93,8 @@ function searchUsers(toSearch, ByParameter) {
 
 /**
  * 
+ * Delete duplicates from an array
+ * 
  * @param {Array} arrToFilter Array of objects you want to filter
  * @param {String} Attr Nombre del attributo por el que va a filtrar
  */
@@ -108,8 +111,13 @@ function filterObjectArray(arrToFilter, Attr) {
 }
 
 
+/**
+ * Function to get the query about certain user
+ * 
+ * @param {String} strUserName User name of the user
+ * @param {Array} parameter Attr you want to receive (If wants all, do not send this parameter)
+ */
 function getUserInfo(strUserName, parameter = null) {
-    console.log(strUserName);
 
     // Check if User to follow exists
     let result = UsersModel.findOne({ strUserName: strUserName },
@@ -122,6 +130,7 @@ function getUserInfo(strUserName, parameter = null) {
 
 
 // ################# Server functions #################
+
 // Function to add a new User (Sign In)
 router.post('/Signin', (req, res) => {
     let jsonUser = req.body   // Get the JSON body
@@ -166,6 +175,13 @@ router.post('/Signin', (req, res) => {
                 // Save in the DB the new model
                 nUser.save()
                     .then(() => {
+
+                        // Check that its post directory does not exists
+                        if (!fs.existsSync('./backend/Post_Images/' + nUser.strUserName)) {
+                            // Create the directory
+                            fs.mkdirSync('./backend/Post_Images/' + nUser.strUserName);
+                        }
+
                         // Return the succes code and messaeg
                         return res.status(201).json({
                             message: `The user ${nUser.strUserName} has been created correctly`
@@ -509,7 +525,7 @@ router.get('/Search', (req, res, next) => {
                     jsonwebtoken.verify(req.token, 'SecretKey', (err, authData) => {
 
                         // Check that it has the authentication data
-                        if (authData) {
+                        if (!err) {
 
                             // Make the query to get the current user information
                             currentUser = getUserInfo(authData.nUser['strUserName']);

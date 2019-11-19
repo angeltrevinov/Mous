@@ -6,10 +6,6 @@ const mongoose = require('mongoose');
  *      strUserName:  The user name of the post author
  *      imgProfile:     The name of the profile image
  */
-const Author = new mongoose.Schema({
-    strUserName: { type: String, required: true }, //@
-    imgProfile: {type: String, require: true},
-});
 
 
 /**
@@ -19,8 +15,11 @@ const Author = new mongoose.Schema({
  *      datePublished:  Date the comment was published
  */
 const Comments = new mongoose.Schema({
-    objAuthor: { type: Author, require: true },
-    strComment: {type: String, required: true},
+    objAuthor: {
+        strUserName: { type: String, required: true }, //@
+        imgProfile: { type: String, require: true },
+    },
+    strComment: { type: String, required: true },
     datePublished: { type: Date, required: true },
 });
 
@@ -35,12 +34,18 @@ const Comments = new mongoose.Schema({
  *      arrLikes:       Array of author schemas
  */
 const postSchema = mongoose.Schema({
-    objAuthor: { type: Author, require: true },
+    objAuthor: {
+        strUserName: { type: String, required: true }, //@
+        imgProfile: { type: String, require: true },
+    },
     strDescription: { type: String, required: true },
     datePublished: { type: Date, required: true },
     arrMedia: [String],
     arrComments: [Comments],
-    arrLikes: [Author]
+    arrLikes: [{
+        strUserName: { type: String, required: true }, //@
+        imgProfile: { type: String, require: true },
+    }]
 });
 
 
