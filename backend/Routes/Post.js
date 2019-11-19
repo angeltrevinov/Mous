@@ -105,8 +105,6 @@ router.post('/MakePost', verifyToken, (req, res, next) => {
                     // Get the post JSON
                     let postBody = req.body;
 
-                    postBody.datePublished = new Date(); // Tempo
-
                     // Check if the server receive the date parameter
                     if (!postBody.datePublished) {
                         // Return the error code
