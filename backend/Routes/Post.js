@@ -48,6 +48,23 @@ function verifyToken(req, res, next) {
 }
 
 
+/**
+ * Function to search if a given user name is in an array of usernames but in string format
+ * 
+ * @param {Array} arrUsers An arry with the arrUsers object
+ * @param {String} userName A string with the username you are looking 
+ */
+function searchUserInStringArray(arrUsers, userName) {
+
+    // Check if the username it is in that array
+    if (arrUsers.find((elem) => { return (elem == userName) })) {
+        return true
+    }
+
+    return false
+}
+
+
 // ################# Server functions #################
 
 // Endpoint to make a post
@@ -126,7 +143,7 @@ router.post('/MakePost', verifyToken, (req, res, next) => {
 
                     // Check if the user upload images
                     if (req.files.length > 0) {
-                        
+
                         // Push each image filename to the array
                         req.files.forEach(file => {
                             arrMedia.push(file.filename)
@@ -177,6 +194,141 @@ router.post('/MakePost', verifyToken, (req, res, next) => {
     });
 });
 
+
+// Make a like post
+router.put('/Like', verifyToken, (req, res, next) => {
+    // Verify the User token
+    jsonwebtoken.verify(req.token, 'SecretKey', (err, authData) => {
+        if (!err) {
+
+            // Verifiy that the query has the Post ID, if not...
+            if (!req.query.postID) {
+                // Return the error code
+                return res.status(406).json({
+                    message: "The date parameter is missing on the Post body"
+                });
+            }
+
+            // Check if User to follow exists
+            PostModel.findOne({ _id: req.query.postID },
+                ['arrLikes'])
+                .exec((err, toLike) => {
+                    if (toLike) {
+
+                        if (!searchUserInStringArray(toLike['arrLikes'], authData.nUser['strUserName'])) {
+
+                            // Pull the follower object from the toUnfollow user array of followers
+                            PostModel.findOneAndUpdate(
+                                { _id: req.query.postID },
+                                { $push: { 'arrLikes': authData.nUser['strUserName'] } },
+
+                                // What to do after de update 
+                                // (It is needed to the update finish correctly)
+                                function (err, doc) {
+                                    if (err) {
+                                        // Return the error code
+                                        return res.status(500)
+                                            .json({ message: "Error saving the like" });
+                                    } else {
+                                        // Return the succes code, the user information and the token
+                                        return res.status(201)
+                                            .json({ message: `Post liked!` });
+                                    }
+                                }
+                            );
+
+                        } else {
+                            // Send the error message and code
+                            return res.status(401)
+                                .json({ message: "You already like this post" });
+                        }
+
+                    } else {
+                        // Return the error code
+                        return res.status(404)
+                            .json({ message: "Post not found" });
+                    }
+                });
+
+
+        } else {
+            // Send the error message and code
+            return res.status(401)
+                .json({ message: `No logged in` });
+        }
+    });
+});
+
+
+// Make a like post
+router.put('/Unlike', verifyToken, (req, res, next) => {
+    
+    // Verify the User token
+    jsonwebtoken.verify(req.token, 'SecretKey', (err, authData) => {
+        if (!err) {
+
+            // Verifiy that the query has the Post ID, if not...
+            if (!req.query.postID) {
+                // Return the error code
+                return res.status(406).json({
+                    message: "The date parameter is missing on the Post body"
+                });
+            }
+
+            // Check if User to follow exists
+            PostModel.findOne({ _id: req.query.postID }, ['arrLikes']).exec((err, toLike) => {
+
+                // If the post exists..
+                if (toLike) {
+                    // Check if the user liked or not this post before
+                    if (searchUserInStringArray(toLike['arrLikes'], authData.nUser['strUserName'])) {
+
+                        // Pull the follower object from the toUnfollow user array of followers
+                        PostModel.findOneAndUpdate(
+                            { _id: req.query.postID },
+                            { $pull: { 'arrLikes': authData.nUser['strUserName'] } },
+
+                            // Callback function
+                            function (err, doc) {
+
+                                // If there was no error...
+                                if (!err) {
+                                    // Return the succes code, the user information and the token
+                                    return res.status(201)
+                                        .json({ message: `Post Unliked!` });
+
+                                    // If there was an error...
+                                } else {
+                                    // Return the error code
+                                    return res.status(500)
+                                        .json({ message: "Error saving the unlike" });
+                                }
+                            }
+                        );
+
+                        // If the user did not liked the post previusly
+                    } else {
+                        // Send the error message and code
+                        return res.status(401)
+                            .json({ message: "You did not liked this post" });
+                    }
+
+                    //  If the post id is incorrect
+                } else {
+                    // Return the error code
+                    return res.status(404)
+                        .json({ message: "Post not found" });
+                }
+            });
+
+            // If the user is not logged in 
+        } else {
+            // Send the error message and code
+            return res.status(401)
+                .json({ message: `No logged in` });
+        }
+    });
+});
 
 
 // Export the enpoints

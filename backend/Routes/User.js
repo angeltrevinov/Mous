@@ -41,21 +41,21 @@ function verifyToken(req, res, next) {
 
 
 /**
- * Function to search in an array of followers if a user is already follower/following 
+ * Function to search in a given array of User objects if a user is already follower/following 
  * another user. 
  * 
- * @param {Array} Followers It is an arry with the followers object
+ * @param {Array} arrUsers It is an arry with the arrUsers object
  * @param {String} userName It is an string with the username you are looking 
  */
-function searchInFollowers(arrFollowers, userName) {
+function searchUserInArray(arrUsers, userName) {
 
     // Map the follower object array to an array with just the user names
-    let Followers = arrFollowers.map((Follower) => {
+    let tempUsers = arrUsers.map((Follower) => {
         return Follower.strUserName;
     });
 
     // Check if the username it is in that array
-    if (Followers.find((elem) => { return (elem == userName) })) {
+    if (tempUsers.find((elem) => { return (elem == userName) })) {
         return true
     }
 
@@ -304,7 +304,7 @@ router.post('/Follow', verifyToken, (req, res) => {
                         if (toFollow) {
 
                             // To check if the user is not already following the toFollow user
-                            if (!searchInFollowers(toFollow.arrFollowers, authData.nUser['strUserName'])) {
+                            if (!searchUserInArray(toFollow.arrFollowers, authData.nUser['strUserName'])) {
 
                                 // Push the new follower object to the ToFollow User
                                 UsersModel.findOneAndUpdate(
@@ -396,7 +396,7 @@ router.post('/Unfollow', verifyToken, (req, res) => {
                         if (toUnfollow) {
 
                             // To check if the user is following the toUnfollow user
-                            if (searchInFollowers(toUnfollow.arrFollowers, authData.nUser['strUserName'])) {
+                            if (searchUserInArray(toUnfollow.arrFollowers, authData.nUser['strUserName'])) {
 
                                 // Pull the follower object from the toUnfollow user array of followers
                                 UsersModel.findOneAndUpdate(
@@ -426,7 +426,7 @@ router.post('/Unfollow', verifyToken, (req, res) => {
                                         .json({ message: `Unfollowing ${req.query.UserToUnfollow}` });
                                 }
 
-                                // If the user already follows the toUnfollow user...
+                                // If the user is not following the toUnfollow user...
                             } else {
                                 // Send the error message and code
                                 return res.status(401)
@@ -536,7 +536,7 @@ router.get('/Search', (req, res, next) => {
                                     Tempo = currentValue.toObject();        // Pass from Mongoose object to JS object
                                     delete Tempo._id                        // Delete the id
                                     // Check if it is in the following array
-                                    Tempo.bFollowing = searchInFollowers(curUser['arrFollowing'], Tempo.strUserName);
+                                    Tempo.bFollowing = searchUserInArray(curUser['arrFollowing'], Tempo.strUserName);
                                     return Tempo;
                                 });
 
