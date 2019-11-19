@@ -1,6 +1,7 @@
 import { Component, OnInit } from '@angular/core';
 import {Router} from '@angular/router';
 import {FormControl, FormGroup, Validators} from '@angular/forms';
+import {UsersService} from '../../services/users.service';
 
 @Component({
   selector: 'app-navbar',
@@ -9,13 +10,14 @@ import {FormControl, FormGroup, Validators} from '@angular/forms';
 })
 export class NavbarComponent implements OnInit {
 
-  userDetails: any;
   boolToken: boolean;
+  userInfo: any;
   searchForm: FormGroup;
 
   // --------------------------------------------------------
   constructor(
-    private router: Router
+    private router: Router,
+    private usersService: UsersService
   ) { }
 
   // --------------------------------------------------------
@@ -32,11 +34,11 @@ export class NavbarComponent implements OnInit {
 
   // --------------------------------------------------------
   validateToken() {
-    this.userDetails = JSON.parse(
-      localStorage.getItem('User')
-    );
-    if (this.userDetails) {
+    if (localStorage.getItem('User')) {
       this.boolToken = true;
+      this.usersService.GetLogInInfo().subscribe((result) => {
+        this.userInfo = result;
+      });
     } else {
       this.boolToken = false;
     }
