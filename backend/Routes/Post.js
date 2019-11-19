@@ -189,7 +189,7 @@ router.post('/MakePost', verifyToken, (req, res, next) => {
         } else {
             // Send the error message and code
             return res.status(401)
-                .json({ message: `No logged in` });
+                .json({ message: `Not logged in` });
         }
     });
 });
@@ -205,16 +205,16 @@ router.put('/Like', verifyToken, (req, res, next) => {
             if (!req.query.postID) {
                 // Return the error code
                 return res.status(406).json({
-                    message: "The date parameter is missing on the Post body"
+                    message: "The postID is missing on the Post body"
                 });
             }
 
-            // Check if User to follow exists
-            PostModel.findOne({ _id: req.query.postID },
-                ['arrLikes'])
+            // Check if the post exists
+            PostModel.findOne({ _id: req.query.postID }, ['arrLikes'])
                 .exec((err, toLike) => {
                     if (toLike) {
 
+                        // Search if the user already liked the post or not
                         if (!searchUserInStringArray(toLike['arrLikes'], authData.nUser['_id'])) {
 
                             // Pull the follower object from the toUnfollow user array of followers
@@ -225,24 +225,27 @@ router.put('/Like', verifyToken, (req, res, next) => {
                                 // What to do after de update 
                                 // (It is needed to the update finish correctly)
                                 function (err, doc) {
-                                    if (err) {
-                                        // Return the error code
-                                        return res.status(500)
-                                            .json({ message: "Error saving the like" });
-                                    } else {
+                                    if (!err) {
                                         // Return the succes code, the user information and the token
                                         return res.status(201)
                                             .json({ message: `Post liked!` });
+
+                                    } else {
+                                        // Return the error code
+                                        return res.status(500)
+                                            .json({ message: "Error saving the like" });
                                     }
                                 }
                             );
 
+                            // If the user already liked the post
                         } else {
                             // Send the error message and code
                             return res.status(401)
                                 .json({ message: "You already like this post" });
                         }
 
+                        // If the post does not exist
                     } else {
                         // Return the error code
                         return res.status(404)
@@ -254,7 +257,7 @@ router.put('/Like', verifyToken, (req, res, next) => {
         } else {
             // Send the error message and code
             return res.status(401)
-                .json({ message: `No logged in` });
+                .json({ message: `Not logged in` });
         }
     });
 });
@@ -262,7 +265,7 @@ router.put('/Like', verifyToken, (req, res, next) => {
 
 // Make a like post
 router.put('/Unlike', verifyToken, (req, res, next) => {
-    
+
     // Verify the User token
     jsonwebtoken.verify(req.token, 'SecretKey', (err, authData) => {
         if (!err) {
@@ -271,11 +274,11 @@ router.put('/Unlike', verifyToken, (req, res, next) => {
             if (!req.query.postID) {
                 // Return the error code
                 return res.status(406).json({
-                    message: "The date parameter is missing on the Post body"
+                    message: "The postID is missing on the Post body"
                 });
             }
 
-            // Check if User to follow exists
+            // Check if the post exists
             PostModel.findOne({ _id: req.query.postID }, ['arrLikes']).exec((err, toLike) => {
 
                 // If the post exists..
@@ -325,7 +328,83 @@ router.put('/Unlike', verifyToken, (req, res, next) => {
         } else {
             // Send the error message and code
             return res.status(401)
-                .json({ message: `No logged in` });
+                .json({ message: `Not logged in` });
+        }
+    });
+});
+
+
+// To register a comment in a post
+router.put('/MakeComment', verifyToken, (req, res, next) => {
+    // Verify the User token
+    jsonwebtoken.verify(req.token, 'SecretKey', (err, authData) => {
+
+        // If everything was fine...
+        if (!err) {
+            let reqBody = req.body;     // Get the JSON
+            let missingAttr = null      // Var to get if a attr is missing
+
+            // Check if a parameter is missing
+            if (!reqBody.strComment) { missingAttr = "strComment" }
+            if (!reqBody.datePublished) { missingAttr = "datePublished" }
+            if (!reqBody.postID) { missingAttr = "postID" }
+
+            // Check if there was any missing parameter
+            if (missingAttr) {
+                // Return the error code
+                return res.status(406).json({
+                    message: `The ${missingAttr} parameter is missing`
+                });
+            }
+
+            // Check if the post exists
+            PostModel.findOne({ _id: reqBody.postID }, ['arrComments']).exec((err, toComment) => {
+
+                // If the post exists..
+                if (toComment) {
+
+                    let newComment = {
+                        strAuthorID: authData.nUser['_id'],
+                        strComment: reqBody.strComment,
+                        datePublished: reqBody.datePublished
+                    }
+
+                    // Pull the follower object from the toUnfollow user array of followers
+                    PostModel.findOneAndUpdate(
+                        { _id: reqBody.postID },
+                        { $push: { 'arrComments': newComment } },
+
+                        // Callback function
+                        function (err, doc) {
+
+                            // If there was no error...
+                            if (!err) {
+                                // Return the succes code, the user information and the token
+                                return res.status(201)
+                                    .json({ message: `Comment publisehd!` });
+
+                                // If there was an error...
+                            } else {
+                                // Return the error code
+                                return res.status(500)
+                                    .json({ message: "Error publishing the comment" });
+                            }
+                        }
+                    );
+
+                    //  If the post id is incorrect
+                } else {
+                    // Return the error code
+                    return res.status(404)
+                        .json({ message: "Post not found" });
+                }
+            });
+
+            // If the user is not logged in 
+        } else {
+            // Send the error message and code
+            return res.status(401)
+                .json({ message: `Not logged in` });
         }
     });
 });
