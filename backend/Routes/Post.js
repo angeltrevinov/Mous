@@ -409,6 +409,10 @@ router.put('/MakeComment', verifyToken, (req, res, next) => {
     });
 });
 
+// To get the list of 
+router.get('Like/:id', (req, res, next) =>{
+
+});
 
 // Export the enpoints
 module.exports = router;

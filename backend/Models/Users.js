@@ -21,8 +21,8 @@ const userSchema = mongoose.Schema({
     strPassword: { type: String, required: true },
     strDescription: { type: String, required: false, default: null },
     strLocation: { type: String, required: false, default: null },
-    imgBanner: { type: String, require: false, default: "emptyProfile" },
-    imgProfile: { type: String, require: false, default: "emptyBanner" },
+    imgBanner: { type: String, require: false, default: "emptyProfile.jpg" },
+    imgProfile: { type: String, require: false, default: "emptyBanner.jpg" },
     arrFollowers: [{type: String, required: true}],
     arrFollowing: [{type: String, required: true}]
 });
