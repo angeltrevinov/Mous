@@ -230,7 +230,7 @@ router.post('/Login', (req, res) => {
     // Check if there is a User with that email
     UsersModel.findOne({ strEmail: nUser.strEmail },
         // And just bring the name, user name, profile image and the password
-        ['strName', 'strUserName', 'imgProfile', 'strEmail', 'strPassword']).exec(function (err, User) {
+        ['_id', 'strUserName', 'strPassword']).exec(function (err, User) {
 
             // If there is one...
             if (User) {
@@ -244,14 +244,12 @@ router.post('/Login', (req, res) => {
                         nUser = User.toObject()
 
                         // Delete all the no needed data
-                        delete nUser._id
-                        delete nUser.strPassword
+                        delete nUser.strPassword    
 
                         // Make the token from the User object
                         jsonwebtoken.sign({ nUser }, 'SecretKey', (err, token) => {
                             // Return the succes code, the user information and the token
                             return res.status(201).json({
-                                user: nUser,
                                 token: token
                             });
                         });
@@ -296,7 +294,7 @@ router.post('/Follow', verifyToken, (req, res) => {
 
                 // Check if User to follow exists
                 UsersModel.findOne({ strUserName: req.query.UserToFollow },
-                    ['strUserName', 'imgProfile', 'strEmail', 'arrFollowers'])
+                    ['strUserName', 'imgProfile', 'arrFollowers'])
                     .exec((err, toFollow) => {
 
                         // Variable to know the follow proccess end correctly
@@ -310,7 +308,7 @@ router.post('/Follow', verifyToken, (req, res) => {
 
                                 // Push the new follower object to the ToFollow User
                                 UsersModel.findOneAndUpdate(
-                                    { strEmail: toFollow.strEmail },
+                                    { strUserName: toFollow.strUserName },
                                     { $push: { 'arrFollowers': authData.nUser } },
 
                                     // What to do after de update 
@@ -320,7 +318,7 @@ router.post('/Follow', verifyToken, (req, res) => {
 
                                 // Push the new following object to the Following User
                                 UsersModel.findOneAndUpdate(
-                                    { strEmail: authData.nUser['strEmail'] },
+                                    { strUserName: authData.nUser['strUserName'] },
                                     { $push: { 'arrFollowing': toFollow } },
 
                                     // What to do after de update 
@@ -388,7 +386,7 @@ router.post('/Unfollow', verifyToken, (req, res) => {
 
                 // Check if User to unFollow exists
                 UsersModel.findOne({ strUserName: req.query.UserToUnfollow },
-                    ['strUserName', 'imgProfile', 'strEmail', 'arrFollowers'])
+                    ['strUserName', 'imgProfile', 'arrFollowers'])
                     .exec((err, toUnfollow) => {
 
                         // Variable to know the unfollow proccess end correctly
@@ -402,7 +400,7 @@ router.post('/Unfollow', verifyToken, (req, res) => {
 
                                 // Pull the follower object from the toUnfollow user array of followers
                                 UsersModel.findOneAndUpdate(
-                                    { strEmail: toUnfollow.strEmail },
+                                    { strUserName: toUnfollow.strUserName },
                                     { $pull: { 'arrFollowers': { strUserName: authData.nUser['strUserName'] } } },
 
                                     // What to do after de update 
@@ -412,7 +410,7 @@ router.post('/Unfollow', verifyToken, (req, res) => {
 
                                 // Pull the toUnfollow user from the following array 
                                 UsersModel.findOneAndUpdate(
-                                    { strEmail: authData.nUser['strEmail'] },
+                                    { strUserName: authData.nUser['strUserName'] },
                                     { $pull: { 'arrFollowing': { strUserName: toUnfollow.strUserName } } },
 
                                     // What to do after de update 

@@ -135,8 +135,6 @@ router.post('/MakePost', verifyToken, (req, res, next) => {
                         });
                     }
 
-                    console.log(authData.nUser)
-
                     // Ensure the indexes were created in order to them be unique
                     PostModel.init().then(() => {
 
@@ -157,13 +155,10 @@ router.post('/MakePost', verifyToken, (req, res, next) => {
                                     .json({ message: "Post published correctly!" });
 
                             }).catch((er) => {
-                                console.log(er)
                                 // If not, send the error message and code
                                 return res.status(500)
                                     .json({ message: 'Error saving the post' });
                             })
-
-
                     });
 
                     // If there was an error saving the images
