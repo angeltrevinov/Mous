@@ -10,6 +10,7 @@ app.use(bodyparser.json());
 
 // Import Project models
 const userRoutes = require('./Routes/User.js');
+const postRoutes = require('./Routes/Post.js');
 
 
 // Make the connection with the MongoDB
@@ -45,6 +46,9 @@ app.listen('8080', () => {
 
 // Use the user endpoints
 app.use("/api/user", userRoutes);
+
+// Use the post endpoints
+app.use("/api/post", postRoutes);
 
 
 // Export the web app
