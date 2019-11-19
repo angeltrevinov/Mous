@@ -15,6 +15,7 @@ const mongoose = require('mongoose');
  *      datePublished:  Date the comment was published
  */
 const Comments = new mongoose.Schema({
+    _id: false,
     strAuthorID: { type: String, required: true },
     strComment: { type: String, required: true },
     datePublished: { type: Date, required: true },
@@ -37,7 +38,7 @@ const postSchema = mongoose.Schema({
     arrMedia: [String],
     arrComments: [Comments],
     arrLikes: [
-        {type: String, required: true }
+        { type: String, required: true }
     ]
 });
 
