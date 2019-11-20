@@ -33,7 +33,7 @@ export class UserInfoComponent implements OnInit {
     if (!this.userToken) {
       this.router.navigate(['/Login']);
     } else {
-      this.usersService.Follow(this.user.strUserName).subscribe((result: any) => {
+      this.usersService.Follow(this.user._id).subscribe((result: any) => {
         this.user.bFollowing = true;
         this.strMessage = result.message;
         this.strType = 'primary';
@@ -51,7 +51,7 @@ export class UserInfoComponent implements OnInit {
     if (!this.userToken) {
       this.router.navigate(['/Login']);
     } else {
-      this.usersService.Unfollow(this.user.strUserName).subscribe((result: any) => {
+      this.usersService.Unfollow(this.user._id).subscribe((result: any) => {
         this.user.bFollowing = false;
         this.strMessage = result.message;
         this.strType = 'primary';
