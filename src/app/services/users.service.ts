@@ -85,28 +85,28 @@ export class UsersService {
   /*
   * Follow
   *
-  * @strUsername: string of the username to follow
+  * @_id: string of the username to follow
   * */
   //--------------------------------------------------------
   Follow(
-    strUsername: string
+    _id: string
   ) {
     const params = new HttpParams()
-      .set('UserToFollow' , strUsername);
+      .set('UserToFollow' , _id);
     return this.http.post(BACKENDUSER + '/Follow', {}, {params});
   }
 
   /*
   * UnFollow
   *
-  * @strUsername: string of the username to unfollow
+  * @_id: string of the username to unfollow
   * */
   //--------------------------------------------------------
   Unfollow(
-    strUsername: string
+    _id: string
   ) {
     const params = new HttpParams()
-      .set('UserToUnfollow', strUsername);
+      .set('UserToUnfollow', _id);
     return this.http.post(BACKENDUSER + '/Unfollow', {}, {params});
   }
 }
