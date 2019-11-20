@@ -1,4 +1,4 @@
-import { Component, OnInit } from '@angular/core';
+import {Component, ElementRef, OnInit, ViewChild} from '@angular/core';
 import {FormControl, FormGroup, Validators} from '@angular/forms';
 import {mimeType} from './mime-type.validator';
 import {invalid} from '@angular/compiler/src/render3/view/util';
@@ -11,9 +11,13 @@ import {PostService} from '../../../services/post.service';
 })
 export class CreatePostComponent implements OnInit {
 
+  @ViewChild('closeModal', {static: true}) private closeModal: ElementRef;
+
   createForm: FormGroup;
   myImagePreview: any = [];
   arrFiles = [];
+  strMessage: string;
+  strType: string;
 
   //--------------------------------------------------------
   constructor(private postService: PostService) { }
@@ -60,11 +64,18 @@ export class CreatePostComponent implements OnInit {
       this.Description.value,
       newDate.toUTCString(),
       this.Images.value
-    ).subscribe((result) => {
-      console.log(result);
+    ).subscribe((result: any) => {
+      this.strMessage = result.message;
+      this.strType = 'primary';
+      setTimeout(function() {
+        this.closeModal.nativeElement.click();
+      }.bind(this), 3000);
     }, (error) => {
-      console.log(error);
+      this.strMessage = error.error.message;
+      this.strType = 'danger';
     });
+    this.strMessage = '';
+    this.strType = '';
   }
 
   //--------------------------------------------------------
