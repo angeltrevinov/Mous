@@ -2,6 +2,7 @@ import { Component, OnInit } from '@angular/core';
 import {FormControl, FormGroup, Validators} from '@angular/forms';
 import {mimeType} from './mime-type.validator';
 import {invalid} from '@angular/compiler/src/render3/view/util';
+import {PostService} from '../../../services/post.service';
 
 @Component({
   selector: 'app-create-post',
@@ -15,7 +16,7 @@ export class CreatePostComponent implements OnInit {
   arrFiles = [];
 
   //--------------------------------------------------------
-  constructor() { }
+  constructor(private postService: PostService) { }
 
   //--------------------------------------------------------
   ngOnInit() {
@@ -25,7 +26,7 @@ export class CreatePostComponent implements OnInit {
           Validators.required,
         ]
       }),
-      Images: new FormControl(null, {
+      Images: new FormControl([], {
         validators: [
           Validators.required,
         ],
@@ -50,6 +51,20 @@ export class CreatePostComponent implements OnInit {
     this.createForm.reset();
     this.myImagePreview = [];
     this.arrFiles = [];
+  }
+
+  //--------------------------------------------------------
+  onCreate() {
+    const newDate = new Date();
+    this.postService.createPost(
+      this.Description.value,
+      newDate.toUTCString(),
+      this.Images.value
+    ).subscribe((result) => {
+      console.log(result);
+    }, (error) => {
+      console.log(error);
+    });
   }
 
   //--------------------------------------------------------

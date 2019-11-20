@@ -12,6 +12,7 @@ import { ProfileComponent } from './component/profile/profile.component';
 import { UserInfoComponent } from './component/search/user-info/user-info.component';
 import {SharedModule} from '../shared/shared.module';
 import { CreatePostComponent } from './component/create-post/create-post.component';
+import {PostService} from '../services/post.service';
 
 @NgModule({
   declarations: [
@@ -31,7 +32,8 @@ import { CreatePostComponent } from './component/create-post/create-post.compone
     SharedModule
   ],
   providers: [
-    WallGuard
+    WallGuard,
+    PostService
   ]
 })
 export class MainModule { }
