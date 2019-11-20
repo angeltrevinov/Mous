@@ -316,6 +316,48 @@ router.get('/getLoginInfo', verifyToken, (req, res) => {
 });
 
 
+// Get all the info of a user
+router.get('/Profile', (req, res) => {
+
+    // Verify the request include the userID
+    if (!req.query.userID) {
+        // Return the error code
+        return res.status(406).json({
+            message: `The userID parameter is missing`
+        });
+    }
+
+    // Make the query
+    let userQuery = getUserInfo(req.query.userID);
+
+    // Execute the query
+    userQuery.exec((err, userData) => {
+
+        // If the user exists
+        if (!err) {
+            
+            // Return the success code and the JSON with the user data
+            return res.status(201)
+                .json({ 
+                    strUserName: userData.strUserName,
+                    strName: userData.strName,
+                    strDescription: userData.strDescription,
+                    imgProfile: userData.imgProfile,
+                    imgBanner: userData.imgBanner,
+                    strLocation: userData.strLocation,
+                    intFollowers: userData.arrFollowers.length,
+                    intFollowing: userData.arrFollowing.length
+                 });
+
+        } else {
+            // Return the error code
+            return res.status(404)
+                .json({ message: "User not found" });
+        }
+    });
+});
+
+
 // Function to follow another user
 router.post('/Follow', verifyToken, (req, res) => {
     // To verify the JWT
