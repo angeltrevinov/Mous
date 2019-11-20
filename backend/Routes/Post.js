@@ -7,6 +7,7 @@ const fs = require("fs");
 
 // Import Project models
 const PostModel = require('../Models/Posts.js');
+const UserModel = require('../Models/Users.js');
 
 // Valid extension
 const MIME_TYPE_MAP = {
@@ -64,6 +65,36 @@ function searchUserInStringArray(arrUsers, userName) {
     return false
 }
 
+/**
+ * Function that returns a query with the post of a given user
+ * 
+ * @param {String} userID  The ID of the user you want the posts from
+ */
+function getPosts(userID, parameters = null) {
+    // Check if User to follow exists
+    let result = PostModel.find({ strAuthorID: userID },
+        parameters
+    );
+
+    return result;
+}
+
+
+/**
+ * Function to get the query about certain user
+ *
+ * @param {String} userID User name of the user
+ * @param {Array} parameter Attr you want to receive (If wants all, do not send this parameter)
+ */
+function getUserInfo(userID, parameter = null) {
+
+    // Check if User to follow exists
+    let result = UserModel.findOne({ _id: userID },
+        parameter
+    );
+
+    return result;
+}
 
 // ################# Server functions #################
 
@@ -190,6 +221,55 @@ router.post('/MakePost', verifyToken, (req, res, next) => {
             // Send the error message and code
             return res.status(401)
                 .json({ message: `Not logged in` });
+        }
+    });
+});
+
+
+// Get all the posts from one user
+router.get('/GetPosts', (req, res, next) => {
+
+    // Verify the request include the userID
+    if (!req.query.userID) {
+        // Return the error code
+        return res.status(406).json({
+            message: `The userID parameter is missing`
+        });
+    }
+    
+    // Make the query to know if the user exists
+    let userQuery = getUserInfo(req.query.userID);
+
+    // Execute the query
+    userQuery.exec((err, userData) => {
+
+        // If the user exists
+        if (!err) {
+
+            // Make the query to get the posts of that user
+            let postsQuery = getPosts(req.query.userID);
+
+            // Execute the query
+            postsQuery.exec((erro, postData) => {
+
+                // If everything was fine...
+                if (!erro) {
+
+                    // Return the success code and the array
+                    return res.status(201)
+                        .json({ userPosts: postData });
+
+                } else {
+                    // Return the error code
+                    return res.status(500)
+                        .json({ message: "Error getting the posts" });
+                }
+            });
+
+            // If the user does not exist
+        } else {
+            return res.status(404)
+                .json({ message: "The user does not exist" });
         }
     });
 });
@@ -410,7 +490,7 @@ router.put('/MakeComment', verifyToken, (req, res, next) => {
 });
 
 // To get the list of 
-router.get('Like/:id', (req, res, next) =>{
+router.get('Like/:id', (req, res, next) => {
 
 });
 

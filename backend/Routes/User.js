@@ -320,7 +320,7 @@ router.get('/getLoginInfo', verifyToken, (req, res) => {
 // Get all the info of a user
 router.get('/Profile', (req, res) => {
 
-    // Verify the request include the userID
+    // Verify the request include the userID as a parameter
     if (!req.query.userID) {
         // Return the error code
         return res.status(406).json({
