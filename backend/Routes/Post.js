@@ -65,16 +65,22 @@ function searchUserInStringArray(arrUsers, userName) {
     return false
 }
 
+
 /**
  * Function that returns a query with the post of a given user
  * 
  * @param {String} userID  The ID of the user you want the posts from
+ * @param {Int} Count  Number of objects you want it to return
+ * @param {Int} Page   Number of pagination
+ * @param {Array} parameters Array with the attr you want it to return 
+ *                          (If all, do not add this parameter)
  */
-function getPosts(userID, parameters = null) {
+function getPosts(userID, Count, Page, parameters = null) {
     // Check if User to follow exists
-    let result = PostModel.find({ strAuthorID: userID },
-        parameters
-    );
+    let result = PostModel.find({ strAuthorID: userID }, parameters)
+        .skip(Count * Page)
+        .limit(parseInt(Count))
+        .sort( '-datePublished' );
 
     return result;
 }
@@ -229,14 +235,21 @@ router.post('/MakePost', verifyToken, (req, res, next) => {
 // Get all the posts from one user
 router.get('/GetPosts', (req, res, next) => {
 
+    let missingAttr = null      // Var to get if a attr is missing
+
+    // Check if a parameter is missing
+    if (!req.query.userID) { missingAttr = "userID" }
+    if (!req.query.Page) { missingAttr = "Page" }
+    if (!req.query.Count) { missingAttr = "Count" }
+
     // Verify the request include the userID
-    if (!req.query.userID) {
+    if (missingAttr) {
         // Return the error code
         return res.status(406).json({
-            message: `The userID parameter is missing`
+            message: `The ${missingAttr} parameter is missing`
         });
     }
-    
+
     // Make the query to know if the user exists
     let userQuery = getUserInfo(req.query.userID);
 
@@ -247,17 +260,48 @@ router.get('/GetPosts', (req, res, next) => {
         if (!err) {
 
             // Make the query to get the posts of that user
-            let postsQuery = getPosts(req.query.userID);
+            let postsQuery = getPosts(req.query.userID, req.query.Count, req.query.Page);
 
             // Execute the query
             postsQuery.exec((erro, postData) => {
 
                 // If everything was fine...
                 if (!erro) {
+                    // To append the array of posts to send
+                    let formatPosts = []
+
+                    if (postData.length > 0) {
+                        // Built the server url
+                        const url = req.protocol + '://' + req.get("host");
+
+                        // Built the image path
+                        const path = url + '/Post_Images/' + userData.strUserName + '/'
+
+                        postData.forEach((ele) => {
+
+                            let arrMedia = ele['arrMedia'].map((index) => {
+                                return path + index;
+                            });
+
+                            formatPosts.push({
+                                _id: ele._id,
+                                strAuthorID: ele.strAuthorID,
+                                strAuthorUserName: userData.strUserName,
+                                strUserName: userData.strUserName,
+                                imgProfile: path + userData.imgProfile,
+                                strDescription: ele.strDescription,
+                                datePublished: ele.datePublished,
+                                arrComments: ele.arrComments.length,
+                                arrLikes: ele.arrLikes.length,
+                                arrMedia
+                            })
+                        });
+
+                    }
 
                     // Return the success code and the array
                     return res.status(201)
-                        .json({ userPosts: postData });
+                        .json({ userPosts: formatPosts });
 
                 } else {
                     // Return the error code
@@ -444,7 +488,8 @@ router.put('/MakeComment', verifyToken, (req, res, next) => {
                 if (toComment) {
 
                     let newComment = {
-                        strAuthorID: authData.nUser['_id'],
+                        datePublished: authData.nUser['_id'],
+                        strAuthorID: ele.strAuthorID,
                         strComment: reqBody.strComment,
                         datePublished: reqBody.datePublished
                     }
