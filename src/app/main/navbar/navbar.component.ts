@@ -40,6 +40,7 @@ export class NavbarComponent implements OnInit {
       this.userRecieve = false;
       this.usersService.GetLogInInfo().subscribe((result) => {
         this.userInfo = result;
+        localStorage.setItem('Username', this.userInfo.strUserName);
         this.userRecieve = true;
       });
     } else {

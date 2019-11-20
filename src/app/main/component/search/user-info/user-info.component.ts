@@ -13,6 +13,7 @@ export class UserInfoComponent implements OnInit {
   userToken;
   strMessage: string;
   strType: string;
+  UserName: string;
 
   //--------------------------------------------------------
   constructor(
@@ -23,6 +24,7 @@ export class UserInfoComponent implements OnInit {
   //--------------------------------------------------------
   ngOnInit() {
     this.userToken = localStorage.getItem('User');
+    this.UserName = localStorage.getItem('Username');
   }
 
   //--------------------------------------------------------
