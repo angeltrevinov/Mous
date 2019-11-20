@@ -1,7 +1,8 @@
-import { Component, OnInit } from '@angular/core';
+import {Component, ElementRef, OnInit, ViewChild} from '@angular/core';
 import {FormControl, FormGroup, Validators} from '@angular/forms';
 import {mimeType} from './mime-type.validator';
 import {invalid} from '@angular/compiler/src/render3/view/util';
+import {PostService} from '../../../services/post.service';
 
 @Component({
   selector: 'app-create-post',
@@ -10,12 +11,16 @@ import {invalid} from '@angular/compiler/src/render3/view/util';
 })
 export class CreatePostComponent implements OnInit {
 
+  @ViewChild('closeModal', {static: true}) private closeModal: ElementRef;
+
   createForm: FormGroup;
   myImagePreview: any = [];
   arrFiles = [];
+  strMessage: string;
+  strType: string;
 
   //--------------------------------------------------------
-  constructor() { }
+  constructor(private postService: PostService) { }
 
   //--------------------------------------------------------
   ngOnInit() {
@@ -25,7 +30,7 @@ export class CreatePostComponent implements OnInit {
           Validators.required,
         ]
       }),
-      Images: new FormControl(null, {
+      Images: new FormControl([], {
         validators: [
           Validators.required,
         ],
@@ -50,6 +55,27 @@ export class CreatePostComponent implements OnInit {
     this.createForm.reset();
     this.myImagePreview = [];
     this.arrFiles = [];
+  }
+
+  //--------------------------------------------------------
+  onCreate() {
+    const newDate = new Date();
+    this.postService.createPost(
+      this.Description.value,
+      newDate.toUTCString(),
+      this.Images.value
+    ).subscribe((result: any) => {
+      this.strMessage = result.message;
+      this.strType = 'primary';
+      setTimeout(function() {
+        this.closeModal.nativeElement.click();
+      }.bind(this), 3000);
+    }, (error) => {
+      this.strMessage = error.error.message;
+      this.strType = 'danger';
+    });
+    this.strMessage = '';
+    this.strType = '';
   }
 
   //--------------------------------------------------------

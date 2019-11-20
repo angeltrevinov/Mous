@@ -15,7 +15,7 @@
             class="form-control"
             formControlName="Description"
             placeholder="Whats on your mind?"
-            [ngClass]="{'is-invalid': Description.invalid && Description.touched}"></textarea>
+            [ngClass]="{'is-invalid': (Description.invalid && Images.invalid) && Description.touched}"></textarea>
           <div class="invalid-feedback">
             Please enter a description
           </div>
@@ -31,9 +31,11 @@
         </div>
       </div>
       <div class="modal-footer">
-        <button type="button" class="btn btn-secondary" data-dismiss="modal">Cancel</button>
-        <button type="button" class="btn btn-primary" (click)="onCancel()">Create</button>
+        <button #closeModal type="button" class="btn btn-secondary" data-dismiss="modal" (click)="onCancel()">Cancel</button>
+        <button type="button" class="btn btn-primary" [disabled]="this.Images.invalid && Description.invalid" (click)="onCreate()">Create</button>
       </div>
     </form>
   </div>
 </div>
+<app-alert [strMessage]="strMessage" [strType]="strType"></app-alert>
+
