@@ -80,7 +80,7 @@ function getPosts(userID, Count, Page, parameters = null) {
     let result = PostModel.find({ strAuthorID: userID }, parameters)
         .skip(Count * Page)
         .limit(parseInt(Count))
-        .sort( '-datePublished' );
+        .sort('-datePublished');
 
     return result;
 }
@@ -287,7 +287,7 @@ router.get('/GetPosts', (req, res, next) => {
                                 _id: ele._id,
                                 strAuthorID: ele.strAuthorID,
                                 strAuthorUserName: userData.strUserName,
-                                strUserName: userData.strUserName,
+                                strName: userData.strName,
                                 imgProfile: path + userData.imgProfile,
                                 strDescription: ele.strDescription,
                                 datePublished: ele.datePublished,
@@ -314,6 +314,94 @@ router.get('/GetPosts', (req, res, next) => {
         } else {
             return res.status(404)
                 .json({ message: "The user does not exist" });
+        }
+    });
+});
+
+
+// Get posts of all the user you follow and send it to show at the wall
+router.get('/Wall', verifyToken, (req, res, nect) => {
+    
+    // Verify the User token
+    jsonwebtoken.verify(req.token, 'SecretKey', (err, authData) => {
+        // Check it the user is logged correctly
+        if (!err) {
+
+            // Make the query to get the user info
+            let userQuery = getUserInfo(authData.nUser['_id']);
+
+            // Check it the current user exists
+            userQuery.exec((err, userObject) => {
+
+                // If it does...
+                if (!err) {
+                    // Get the current user arr of following accounts
+                    let userFollowing = userObject['arrFollowing'];
+                    // Temporal to concat the posts
+                    let arrFinal = []
+
+                    // Iterate through the following users
+                    userFollowing.forEach((userID, index) => {
+                        // Get the post from all of them
+                        PostModel.find({ strAuthorID: userID })
+                            .sort('-datePublished')     // Sort by date
+                            
+                            .then((result) => {
+                                // To all the posts...
+                                let tempoArr = result.map((elem) => {
+                                    let arrMedia = []
+
+                                    // Built the server url
+                                    const url = req.protocol + '://' + req.get("host");
+
+                                    // Built the image path
+                                    const path = url + '/Post_Images/' + authData.nUser['strUserName'] + '/'
+
+                                    // If the post has images...
+                                    if (elem['arrMedia'].length > 0) {
+                                        // Bulilt the complete path
+                                        arrMedia = elem['arrMedia'].map((index) => {
+                                            return path + index;
+                                        });
+                                    }
+
+                                    // Return the new post object
+                                    return {
+                                        _id: elem._id,
+                                        strAuthorID: elem.strAuthorID,
+                                        strAuthorUserName: userObject['strUserName'],
+                                        strName: userObject['strName'],
+                                        imgProfile: path + userObject['imgProfile'],
+                                        strDescription: elem.strDescription,
+                                        datePublished: elem.datePublished,
+                                        arrComments: elem.arrComments.length,
+                                        arrLikes: elem.arrLikes.length,
+                                        arrMedia
+                                    }
+
+                                });
+                                // Concat the posts
+                                arrFinal = arrFinal.concat(tempoArr);
+                                
+
+                                // If it reach the final user, return the result array
+                                if (index === userFollowing.length - 1) {
+                                    return res.status(200).json(arrFinal);
+                                }
+                            });
+                    });
+
+                } else {
+                    // Return the error code
+                    return res.status(404)
+                        .json({ message: "User not found" });
+                }
+            });
+
+        } else {
+            // Send the error message and code
+            return res.status(401)
+                .json({ message: `Not logged in` });
         }
     });
 });

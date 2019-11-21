@@ -628,9 +628,14 @@ router.get('/Search', (req, res, next) => {
                                 let iBegin = parseInt(req.query.Page) * parseInt(req.query.Count);
                                 let iFinal = iBegin + parseInt(req.query.Count);
 
+                                let newArr = toAppend.slice(iBegin, iFinal)
+
                                 // Send the correct code and the array with the results
                                 return res.status(200)
-                                    .json({ searchResult: toAppend.slice(iBegin, iFinal) });
+                                    .json({ 
+                                        searchResult: newArr ,
+                                        bEnd: (iFinal >= toAppend.length)
+                                    });
                             });
                         }
                     });
