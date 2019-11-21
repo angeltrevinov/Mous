@@ -633,8 +633,8 @@ router.get('/Search', (req, res, next) => {
                                 // Send the correct code and the array with the results
                                 return res.status(200)
                                     .json({ 
-                                        searchResult: newArr ,
-                                        bEnd: (iFinal >= toAppend.length)
+                                        bEnd: (iFinal >= toAppend.length),
+                                        searchResult: newArr
                                     });
                             });
                         }
