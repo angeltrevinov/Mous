@@ -320,7 +320,7 @@ router.get('/getLoginInfo', verifyToken, (req, res) => {
 // Get all the info of a user
 router.get('/Profile', (req, res) => {
 
-    // Verify the request include the userID
+    // Verify the request include the userID as a parameter
     if (!req.query.userID) {
         // Return the error code
         return res.status(406).json({
@@ -628,9 +628,14 @@ router.get('/Search', (req, res, next) => {
                                 let iBegin = parseInt(req.query.Page) * parseInt(req.query.Count);
                                 let iFinal = iBegin + parseInt(req.query.Count);
 
+                                let newArr = toAppend.slice(iBegin, iFinal)
+
                                 // Send the correct code and the array with the results
                                 return res.status(200)
-                                    .json({ searchResult: toAppend.slice(iBegin, iFinal) });
+                                    .json({ 
+                                        bEnd: (iFinal >= toAppend.length),
+                                        searchResult: newArr
+                                    });
                             });
                         }
                     });

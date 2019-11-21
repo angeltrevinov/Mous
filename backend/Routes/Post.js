@@ -7,6 +7,7 @@ const fs = require("fs");
 
 // Import Project models
 const PostModel = require('../Models/Posts.js');
+const UserModel = require('../Models/Users.js');
 
 // Valid extension
 const MIME_TYPE_MAP = {
@@ -64,6 +65,66 @@ function searchUserInStringArray(arrUsers, userName) {
     return false
 }
 
+
+/**
+ * Function that returns a query with the post of a given user
+ * 
+ * @param {String} userID  The ID of the user you want the posts from
+ * @param {Int} Count  Number of objects you want it to return
+ * @param {Int} Page   Number of pagination
+ * @param {Array} parameters Array with the attr you want it to return 
+ *                          (If all, do not add this parameter)
+ */
+function getPosts(userID, Count, Page, parameters = null) {
+    // Check if User to follow exists
+    let result = PostModel.find({ strAuthorID: userID }, parameters)
+        .skip(Count * Page)
+        .limit(parseInt(Count))
+        .sort('-datePublished');
+
+    return result;
+}
+
+
+/**
+ * Function to get the query about certain user
+ *
+ * @param {String} userID User name of the user
+ * @param {Array} parameter Attr you want to receive (If wants all, do not send this parameter)
+ */
+function getUserInfo(userID, parameter = null) {
+    // Check if User to follow exists
+    let result = UserModel.findOne({ _id: userID },
+        parameter
+    );
+
+    return result;
+}
+
+/**
+ * To sort an array of objects
+ * 
+ * @param {String} Field The attr you want to sort by
+ * @param {Boolean} Reverse If it is ascending or descending
+ * @param {Operato} Primer 
+ */
+const sort_by = (Field, Reverse, Primer) => {
+
+    // Get the how to compare
+    const key = Primer ?
+        function (X) {
+            return Primer(X[Field])
+        } :
+        function (X) {
+            return X[Field]
+        };
+
+    Reverse = !Reverse ? 1 : -1;
+
+    return function (A, B) {
+        return A = key(A), B = key(B), Reverse * ((A > B) - (B > A));
+    }
+}
 
 // ################# Server functions #################
 
@@ -186,6 +247,215 @@ router.post('/MakePost', verifyToken, (req, res, next) => {
             });
 
             // If the user is not logged in 
+        } else {
+            // Send the error message and code
+            return res.status(401)
+                .json({ message: `Not logged in` });
+        }
+    });
+});
+
+
+// Get all the posts from one user
+router.get('/GetPosts', (req, res, next) => {
+
+    let missingAttr = null      // Var to get if a attr is missing
+
+    // Check if a parameter is missing
+    if (!req.query.userID) { missingAttr = "userID" }
+    if (!req.query.Page) { missingAttr = "Page" }
+    if (!req.query.Count) { missingAttr = "Count" }
+
+    // Verify the request include the userID
+    if (missingAttr) {
+        // Return the error code
+        return res.status(406).json({
+            message: `The ${missingAttr} parameter is missing`
+        });
+    }
+
+    // Make the query to know if the user exists
+    let userQuery = getUserInfo(req.query.userID);
+
+    // Execute the query
+    userQuery.exec((err, userData) => {
+
+        // If the user exists
+        if (!err) {
+
+            // Make the query to get the posts of that user
+            let postsQuery = getPosts(req.query.userID, req.query.Count, req.query.Page);
+
+            // Execute the query
+            postsQuery.exec((erro, postData) => {
+
+                // If everything was fine...
+                if (!erro) {
+                    // To append the array of posts to send
+                    let formatPosts = []
+
+                    if (postData.length > 0) {
+                        // Built the server url
+                        const url = req.protocol + '://' + req.get("host");
+
+                        // Built the image path
+                        const path = url + '/Post_Images/' + userData.strUserName + '/'
+
+                        postData.forEach((ele) => {
+
+                            let arrMedia = ele['arrMedia'].map((index) => {
+                                return path + index;
+                            });
+
+                            formatPosts.push({
+                                _id: ele._id,
+                                strAuthorID: ele.strAuthorID,
+                                strAuthorUserName: userData.strUserName,
+                                strName: userData.strName,
+                                imgProfile: path + userData.imgProfile,
+                                strDescription: ele.strDescription,
+                                datePublished: ele.datePublished,
+                                arrComments: ele.arrComments.length,
+                                arrLikes: ele.arrLikes.length,
+                                arrMedia
+                            })
+                        });
+                    }
+
+                    // Return the success code and the array
+                    return res.status(201)
+                        .json({
+                            bEnd: (formatPosts.length < req.query.imgProfileCount),
+                            userPosts: formatPosts
+                        });
+
+                } else {
+                    // Return the error code
+                    return res.status(500)
+                        .json({ message: "Error getting the posts" });
+                }
+            });
+
+            // If the user does not exist
+        } else {
+            return res.status(404)
+                .json({ message: "The user does not exist" });
+        }
+    });
+});
+
+
+// Get posts of all the user you follow and send it to show at the wall
+router.get('/Wall', verifyToken, (req, res, nect) => {
+
+    // Verify the User token
+    jsonwebtoken.verify(req.token, 'SecretKey', (err, authData) => {
+        // Check it the user is logged correctly
+        if (!err) {
+            let missingAttr = null    // Var to get if a attr is missing
+
+            // Check if the server receive all the parameters
+            if (!req.query.Page) { missingAttr = "Page" }
+            if (!req.query.Count) { missingAttr = "Count" }
+
+            // Check that the parameter exists
+            if (missingAttr) {
+                // Return the error code
+                return res.status(406).json({
+                    message: `The ${missingAttr} parameter is missing`
+                });
+            }
+
+            // Make the query to get the user info
+            let userQuery = getUserInfo(authData.nUser['_id']);
+
+            // Check it the current user exists
+            userQuery.exec((err, currentUser) => {
+
+                // If it does...
+                if (!err) {
+                    // Get the current user arr of following accounts
+                    let userFollowing = currentUser['arrFollowing'];
+                    // Temporal to concat the posts
+                    let arrToAppend = []
+
+                    // Iterate through the following users
+                    userFollowing.forEach((userID, index) => {
+
+                        // Get the author 
+                        UserModel.findById({ _id: userID })
+                            .then((authorObject) => {
+
+                                // Get the post from all of them
+                                PostModel.find({ strAuthorID: authorObject._id })
+                                    .sort('-datePublished')     // Sort by date
+
+                                    .then((result) => {
+                                        // To all the posts...
+                                        let tempoArr = result.map((elem) => {
+                                            let arrMedia = []
+
+                                            // Built the server url
+                                            const url = req.protocol + '://' + req.get("host");
+
+                                            // Built the image path
+                                            const path = url + '/Post_Images/' + authData.nUser['strUserName'] + '/'
+
+                                            // If the post has images...
+                                            if (elem['arrMedia'].length > 0) {
+                                                // Bulilt the complete path
+                                                arrMedia = elem['arrMedia'].map((index) => {
+                                                    return path + index;
+                                                });
+                                            }
+
+                                            // Return the new post object
+                                            return {
+                                                _id: elem._id,
+                                                strAuthorID: elem.strAuthorID,
+                                                strAuthorUserName: authorObject.strUserName,
+                                                strName: authorObject.strName,
+                                                imgProfile: path + authorObject.imgProfile,
+                                                strDescription: elem.strDescription,
+                                                datePublished: elem.datePublished,
+                                                arrComments: elem.arrComments.length,
+                                                arrLikes: elem.arrLikes.length,
+                                                arrMedia
+                                            }
+
+                                        });
+                                        // Concat the posts
+                                        arrToAppend = arrToAppend.concat(tempoArr);
+
+                                        // Calculate the number of users to send
+                                        let iBegin = parseInt(req.query.Page) * parseInt(req.query.Count);
+                                        let iFinal = iBegin + parseInt(req.query.Count);
+
+                                        // Get the array part by pagination
+                                        let newArr = arrToAppend.slice(iBegin, iFinal)
+
+                                        // Sort by the date
+                                        newArr = newArr.sort(sort_by('datePublished', true, Date));
+
+                                        // If it reach the final user, return the result array
+                                        if (index === userFollowing.length - 1) {
+                                            return res.status(200).json({
+                                                bEnd: (iFinal > newArr.length),
+                                                size: newArr.length,
+                                                searchResult: newArr
+                                            });
+                                        }
+                                    });
+                            });
+                    });
+
+                } else {
+                    // Return the error code
+                    return res.status(404)
+                        .json({ message: "User not found" });
+                }
+            });
+
         } else {
             // Send the error message and code
             return res.status(401)
@@ -364,7 +634,8 @@ router.put('/MakeComment', verifyToken, (req, res, next) => {
                 if (toComment) {
 
                     let newComment = {
-                        strAuthorID: authData.nUser['_id'],
+                        datePublished: authData.nUser['_id'],
+                        strAuthorID: ele.strAuthorID,
                         strComment: reqBody.strComment,
                         datePublished: reqBody.datePublished
                     }
@@ -410,7 +681,7 @@ router.put('/MakeComment', verifyToken, (req, res, next) => {
 });
 
 // To get the list of 
-router.get('Like/:id', (req, res, next) =>{
+router.get('Like/:id', (req, res, next) => {
 
 });
 
