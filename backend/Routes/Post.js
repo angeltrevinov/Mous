@@ -13,7 +13,8 @@ const UserModel = require('../Models/Users.js');
 const MIME_TYPE_MAP = {
     'image/png': 'png',
     'image/jpeg': 'jpg',
-    'image/jpg': 'jpg'
+    'image/jpg': 'jpg',
+    'image/gif': 'gif'
 };
 
 // Express app
@@ -101,6 +102,7 @@ function getUserInfo(userID, parameter = null) {
     return result;
 }
 
+
 /**
  * To sort an array of objects
  * 
@@ -127,7 +129,6 @@ const sort_by = (Field, Reverse, Primer) => {
 }
 
 // ################# Server functions #################
-
 // Endpoint to make a post
 router.post('/MakePost', verifyToken, (req, res, next) => {
     // Verify the User token
@@ -240,9 +241,8 @@ router.post('/MakePost', verifyToken, (req, res, next) => {
                     // If there was an error saving the images
                 } else {
                     // Return the error code
-                    return res.status(500).json({
-                        message: "Error saving the images"
-                    });
+                    return res.status(500)
+                        .json({ message: "Error saving the images" });
                 }
             });
 
@@ -253,6 +253,106 @@ router.post('/MakePost', verifyToken, (req, res, next) => {
                 .json({ message: `Not logged in` });
         }
     });
+});
+
+
+// To get the list of 
+router.get('/GetPost/:postID', (req, res, next) => {
+
+    let missingAttr = null      // Var to get if a attr is missing
+
+    // Check if a parameter is missing
+    if (!req.query.Page) { missingAttr = "Page" }
+    if (!req.query.Count) { missingAttr = "Count" }
+
+    // Verify the request include the userID
+    if (missingAttr) {
+        // Return the error code
+        return res.status(406).json({
+            message: `The ${missingAttr} parameter is missing`
+        });
+    }
+
+    // Get the post information
+    PostModel.findById(req.params.postID)
+        .then((postObject) => {
+
+            if (postObject) {
+                // Get the current user arr of following accounts
+                let postComments = postObject['arrComments'];
+                // Temporal to concat the posts
+                let arrToAppend = []
+
+                // Iterate through the following users
+                postComments.forEach((commentObj, index) => {
+
+                    // Get the post from all of them
+                    UserModel.findById({ _id: commentObj.strAuthorID })
+                        .exec((err, authorData) => {
+
+                            // If everything is fine...
+                            if (!err) {
+                                // Make the comment (mongoose obj) to a writable obj
+                                let tempObj = commentObj.toObject()
+
+                                // Built the server url
+                                const url = req.protocol + '://' + req.get("host");
+
+                                // Built the image path
+                                const path = url + '/Post_Images/' + authorData.strUserName + '/'
+
+                                // Complete the user data
+                                tempObj['strUserName'] = authorData.strUserName
+                                tempObj['strName'] = authorData.strName
+                                tempObj['imgProfile'] = path + authorData.imgProfile
+
+                                // Add the comment to the array
+                                arrToAppend.push(tempObj)
+
+                                // If it get the data of all the comments
+                                if (arrToAppend.length === postComments.length) {
+
+                                    // Calculate the number of users to send
+                                    let iBegin = parseInt(req.query.Page) * parseInt(req.query.Count);
+                                    let iFinal = iBegin + parseInt(req.query.Count);
+
+                                    // Sort the array by date
+                                    let newArr = arrToAppend.sort(function (a, b) {
+                                        return new Date(b.datePublished) - new Date(a.datePublished);
+                                    });
+
+                                    // Get the array part by pagination
+                                    newArr = newArr.slice(iBegin, iFinal)
+
+                                    // Sort by the date
+                                    newArr = newArr.sort(sort_by('datePublished', true, Date));
+
+                                    // Return the final array
+                                    return res.status(200).json({
+                                        bEnd: (iFinal > newArr.length),
+                                        searchResult: newArr
+                                    });
+                                }
+
+                            } else {
+                                // If there was an error at the query execution
+                                return res.status(500)
+                                    .json({ message: "Error" })
+                            }
+                        });
+                });
+
+                // If the post do not exists
+            } else {
+                return res.status(404)
+                    .json({ message: "Post not found" })
+            }
+        })
+        // If the query has an error
+        .catch((err) => {
+            return res.status(500)
+                .json({ message: "Error" })
+        });
 });
 
 
@@ -325,7 +425,7 @@ router.get('/GetPosts', (req, res, next) => {
                     // Return the success code and the array
                     return res.status(201)
                         .json({
-                            bEnd: (formatPosts.length < req.query.imgProfileCount),
+                            bEnd: (formatPosts.length < req.query.Count),
                             userPosts: formatPosts
                         });
 
@@ -431,11 +531,13 @@ router.get('/Wall', verifyToken, (req, res, nect) => {
                                         let iBegin = parseInt(req.query.Page) * parseInt(req.query.Count);
                                         let iFinal = iBegin + parseInt(req.query.Count);
 
+                                        // Sort by date the array
+                                        arrToAppend = arrToAppend.sort(function (a, b) {
+                                            return new Date(b.datePublished) - new Date(a.datePublished);
+                                        });
+
                                         // Get the array part by pagination
                                         let newArr = arrToAppend.slice(iBegin, iFinal)
-
-                                        // Sort by the date
-                                        newArr = newArr.sort(sort_by('datePublished', true, Date));
 
                                         // If it reach the final user, return the result array
                                         if (index === userFollowing.length - 1) {
@@ -635,7 +737,7 @@ router.put('/MakeComment', verifyToken, (req, res, next) => {
 
                     let newComment = {
                         datePublished: authData.nUser['_id'],
-                        strAuthorID: ele.strAuthorID,
+                        strAuthorID: authData.nUser['_id'],
                         strComment: reqBody.strComment,
                         datePublished: reqBody.datePublished
                     }
@@ -679,6 +781,7 @@ router.put('/MakeComment', verifyToken, (req, res, next) => {
         }
     });
 });
+
 
 // To get the list of 
 router.get('Like/:id', (req, res, next) => {
