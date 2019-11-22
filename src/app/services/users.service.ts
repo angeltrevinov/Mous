@@ -113,12 +113,13 @@ export class UsersService {
   /*
   *  getUserProfile
   *
-  * @param: strUserName: string of the username
+  * @param: strUserName: string with the user id
   * */
   ///-------------------------------------------------------
   GetUserProfile(
-    strUserName: string
+    _id: string
   ) {
-    return this.http.get(BACKENDUSER);
+    const params = new HttpParams().set('userID', _id);
+    return this.http.get(BACKENDUSER + '/Profile', {params});
   }
 }
