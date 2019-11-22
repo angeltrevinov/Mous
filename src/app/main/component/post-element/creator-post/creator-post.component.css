@@ -1,0 +1,12 @@
+img {
+  width: 60px;
+  height: 60px;
+}
+
+a {
+  color: white;
+}
+
+.carousel-inner img {
+  margin: auto;
+}

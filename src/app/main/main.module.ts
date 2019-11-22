@@ -13,6 +13,8 @@ import { UserInfoComponent } from './component/search/user-info/user-info.compon
 import {SharedModule} from '../shared/shared.module';
 import { CreatePostComponent } from './component/create-post/create-post.component';
 import {PostService} from '../services/post.service';
+import { PostElementComponent } from './component/post-element/post-element.component';
+import { CreatorPostComponent } from './component/post-element/creator-post/creator-post.component';
 
 @NgModule({
   declarations: [
@@ -24,6 +26,8 @@ import {PostService} from '../services/post.service';
     ProfileComponent,
     UserInfoComponent,
     CreatePostComponent,
+    PostElementComponent,
+    CreatorPostComponent,
   ],
   imports: [
     CommonModule,

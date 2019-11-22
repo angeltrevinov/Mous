@@ -1,12 +1,12 @@
 <div class="container-fluid">
   <div class="row">
-    <div [routerLink]="['/Profile', user.strUserName]" class="col-3 text-center" style="min-width: 60px; max-width: 200px;">
+    <div [routerLink]="['/Profile', user._id]" class="col-3 text-center" style="min-width: 60px; max-width: 200px;">
       <img
         class="rounded-circle"
         onerror="this.onerror=null; this.src='../../../../assets/images/user.png'"
         src="{{ user.imgProfile }}">
     </div>
-    <div [routerLink]="['/Profile', user.strUserName]" class="col-6" style="padding-right: 0px">
+    <div [routerLink]="['/Profile', user._id]" class="col-6" style="padding-right: 0px">
       <h5 style="margin-bottom: 0px">
         {{ user.strName }}
       </h5>
