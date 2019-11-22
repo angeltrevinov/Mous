@@ -19,7 +19,7 @@ export class ProfileComponent implements OnInit {
   //--------------------------------------------------------
   ngOnInit() {
     this.route.paramMap.subscribe((result: ParamMap) => {
-      this.userName = result.get('username');
+      this.userName = result.get('id');
     });
   }
 

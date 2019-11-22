@@ -12,7 +12,7 @@ const routes: Routes = [
   { path: '', component: MainComponent, children: [
       {path: '', redirectTo: 'Wall', pathMatch: 'full'},
       {path: 'Wall', component: WallComponent, canActivate: [WallGuard] },
-      {path: 'Profile/:username', component: ProfileComponent },
+      {path: 'Profile/:id', component: ProfileComponent },
       {path: 'Search/:term', component: SearchComponent },
       {path: '**', component: NotFoundComponent}
     ]
