@@ -277,7 +277,7 @@ router.get('/getLoginInfo', verifyToken, (req, res) => {
         if (!err) {
 
             // Make the query
-            const queryUser = getUserInfo(authData.nUser['_id'], ['strUserName', 'strName', 'imgProfile']);
+            const queryUser = getUserInfo(authData.nUser['_id'], ['strUserName', 'strName', 'imgProfile', '_id']);
 
             // Execute the query
             queryUser.exec((err, currentUser) => {
@@ -293,6 +293,7 @@ router.get('/getLoginInfo', verifyToken, (req, res) => {
                     // Return the success code and the data
                     return res.status(201)
                         .json({
+                            _id: currentUser._id,
                             strUserName: currentUser.strUserName,
                             strName: currentUser.strName,
                             imgProfile: path
@@ -319,7 +320,7 @@ router.get('/getLoginInfo', verifyToken, (req, res) => {
 
 // Get all the info of a user
 router.get('/Profile', (req, res) => {
-
+    
     // Verify the request include the userID as a parameter
     if (!req.query.userID) {
         // Return the error code
@@ -331,25 +332,84 @@ router.get('/Profile', (req, res) => {
     // Make the query
     let userQuery = getUserInfo(req.query.userID);
 
-    // Execute the query
-    userQuery.exec((err, userData) => {
+    // Execute the query to get the searched user
+    userQuery.exec((err, searchUser) => {
 
-        // If the user exists
+        // If the user exists...
         if (!err) {
-            
-            // Return the success code and the JSON with the user data
-            return res.status(201)
-                .json({ 
-                    strUserName: userData.strUserName,
-                    strName: userData.strName,
-                    strDescription: userData.strDescription,
-                    imgProfile: userData.imgProfile,
-                    imgBanner: userData.imgBanner,
-                    strLocation: userData.strLocation,
-                    intFollowers: userData.arrFollowers.length,
-                    intFollowing: userData.arrFollowing.length
-                 });
 
+            // Check if the current user is logged in
+            if (typeof req.headers['authorization'] !== 'undefined') {
+                // Verify the token
+                // Split at the space
+                const bearer = req.headers['authorization'].split(' ');
+                // Get token from array
+                const bearerToken = bearer[1];
+                // Set the token
+                req.token = bearerToken;
+
+                // Verify the token
+                jsonwebtoken.verify(req.token, 'SecretKey', (err, authData) => {
+
+                    // Check that it has the authentication data
+                    if (!err) {
+
+                        // Make the query to get the current user information
+                        currentUser = getUserInfo(authData.nUser['_id']);
+                        // Execute the query
+                        currentUser.exec((erro, curUser) => {
+
+                            // If it is correct...
+                            if (!erro) {
+
+                                // Get if the current user follows or not the searchUser
+                                let bFollowing = searchUserInStringArray(curUser['arrFollowing', searchUser._id])
+
+                                // Return the success code and the JSON with the user data
+                                return res.status(201)
+                                    .json({
+                                        strUserName: searchUser.strUserName,
+                                        strName: searchUser.strName,
+                                        strDescription: searchUser.strDescription,
+                                        imgProfile: searchUser.imgProfile,
+                                        imgBanner: searchUser.imgBanner,
+                                        strLocation: searchUser.strLocation,
+                                        intFollowers: searchUser.arrFollowers.length,
+                                        intFollowing: searchUser.arrFollowing.length,
+                                        bFollowing
+                                    });
+
+                            // If there was an error searching the current user
+                            } else {
+                                // Return the error code 
+                                return res.status(401)
+                                    .json({ message: "Authentication fail" })
+                            }
+                        });
+                    
+                        // Return the error code
+                    } else {
+                        return res.status(401)
+                            .json({ message: "Authentication fail" })
+                    }
+                });
+            } else {
+                // Return the success code and the JSON with the user data
+                return res.status(201)
+                    .json({
+                        strUserName: searchUser.strUserName,
+                        strName: searchUser.strName,
+                        strDescription: searchUser.strDescription,
+                        imgProfile: searchUser.imgProfile,
+                        imgBanner: searchUser.imgBanner,
+                        strLocation: searchUser.strLocation,
+                        intFollowers: searchUser.arrFollowers.length,
+                        intFollowing: searchUser.arrFollowing.length,
+                        bFollowing: false
+                    });
+            }
+
+        // If the user it is looking for 
         } else {
             // Return the error code
             return res.status(404)
@@ -632,7 +692,7 @@ router.get('/Search', (req, res, next) => {
 
                                 // Send the correct code and the array with the results
                                 return res.status(200)
-                                    .json({ 
+                                    .json({
                                         bEnd: (iFinal >= toAppend.length),
                                         searchResult: newArr
                                     });
