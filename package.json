@@ -3,18 +3,19 @@
   "version": "0.0.0",
   "scripts": {
     "ng": "ng",
-    "start": "ng serve",
+    "start": "nodemon backend/server.js",
     "build": "ng build",
     "test": "ng test",
     "lint": "ng lint",
     "e2e": "ng e2e",
-    "server": "nodemon ./backend/server.js",
-    "server2": "node ./backend/server.js"
+    "postinstall": "ng build --prod --output-path backend/dist"
   },
   "private": true,
   "dependencies": {
     "@angular/animations": "~8.2.11",
     "@angular/common": "~8.2.11",
+    "@angular/cli": "~8.3.13",
+    "@angular/compiler-cli": "~8.2.11",
     "@angular/compiler": "~8.2.11",
     "@angular/core": "~8.2.11",
     "@angular/forms": "~8.2.11",

@@ -53,6 +53,9 @@ app.use("/api/user", userRoutes);
 // Use the post endpoints
 app.use("/api/post", postRoutes);
 
+//Angular
+var distDir = __dirname + "/dist/";
+app.use(express.static(distDir));
 
 // Export the web app
 module.exports = app;
