@@ -173,6 +173,12 @@ router.post('/Signin', (req, res) => {
                 nUser.save()
                     .then(() => {
 
+                      // Check that its post directory does not exists
+                      if (!fs.existsSync('./backend/Post_Images/')) {
+                        // Create the directory
+                        fs.mkdirSync('./backend/Post_Images/');
+                      }
+                      
                         // Check that its post directory does not exists
                         if (!fs.existsSync('./backend/Post_Images/' + nUser.strUserName)) {
                             // Create the directory
