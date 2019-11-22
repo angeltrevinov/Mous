@@ -17,9 +17,11 @@
   </div>
   <div class="row">
     <div class="col-2" style="min-width: 100px">
-      <button type="button" class="btn btn-outline-success btn-block">
-        <i *ngIf="!Post.bLike" class="fa fa-heart-o" aria-hidden="true"></i>
-        <i *ngIf="Post.bLike" class="fa fa-heart" aria-hidden="true"></i>
+      <button  *ngIf="!Post.bLike" type="button" class="btn btn-outline-success btn-block" (click)="OnLike()">
+        <i class="fa fa-heart-o" aria-hidden="true"></i>
+      </button>
+      <button *ngIf="Post.bLike" type="button" class="btn btn-outline-success btn-block" (click)="OnDislike()">
+        <i class="fa fa-heart" aria-hidden="true"></i>
       </button>
     </div>
     <div class="col-2" style="padding-top: 10px">
