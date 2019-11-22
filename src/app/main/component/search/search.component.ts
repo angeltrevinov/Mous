@@ -68,7 +68,7 @@ export class SearchComponent implements OnInit {
     this.boolShowSpinner = true;
     this.usersService.Search(this.searchTerm, this.intPage, this.intCount)
       .subscribe((result: any) => {
-        this.intPage = this.intPage + this.intCount;
+        this.intPage = this.intPage + 1;
         this.searchResult = this.searchResult.concat(result.searchResult);
         this.boolShowSpinner = false;
         this.boolEndOFPage = result.bEnd;

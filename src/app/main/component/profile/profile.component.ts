@@ -37,6 +37,7 @@ export class ProfileComponent implements OnInit {
     this.intPage = 0;
     this.intCount = 3;
     this.callPostService();
+    
   }
 
   //--------------------------------------------------------
@@ -64,7 +65,7 @@ export class ProfileComponent implements OnInit {
       this.intPage,
       this.intCount
     ).subscribe((result: any) => {
-      this.intPage = this.intPage + this.intCount;
+      this.intPage = this.intPage + 1;
       this.arrPosts = this.arrPosts.concat(result.userPosts);
       this.boolShowSpinnerPosts = false;
       this.boolEndOfPage = result.bEnd;
