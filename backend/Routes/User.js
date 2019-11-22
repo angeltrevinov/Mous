@@ -320,7 +320,7 @@ router.get('/getLoginInfo', verifyToken, (req, res) => {
 
 // Get all the info of a user
 router.get('/Profile', (req, res) => {
-    
+
     // Verify the request include the userID as a parameter
     if (!req.query.userID) {
         // Return the error code
@@ -382,12 +382,12 @@ router.get('/Profile', (req, res) => {
 
                             // If there was an error searching the current user
                             } else {
-                                // Return the error code 
+                                // Return the error code
                                 return res.status(401)
                                     .json({ message: "Authentication fail" })
                             }
                         });
-                    
+
                         // Return the error code
                     } else {
                         return res.status(401)
@@ -411,7 +411,7 @@ router.get('/Profile', (req, res) => {
                     });
             }
 
-        // If the user it is looking for 
+        // If the user it is looking for
         } else {
             // Return the error code
             return res.status(404)

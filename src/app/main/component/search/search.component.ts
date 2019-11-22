@@ -33,7 +33,7 @@ export class SearchComponent implements OnInit {
     this.formCreation();
     this.DataToSearch.setValue(this.searchTerm);
     this.intPage = 0;
-    this.intCount = 5;
+    this.intCount = 3;
     this.callSearchService();
   }
 
