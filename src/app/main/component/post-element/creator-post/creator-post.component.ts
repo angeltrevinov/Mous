@@ -7,6 +7,7 @@ import {Component, Input, OnInit} from '@angular/core';
 })
 export class CreatorPostComponent implements OnInit {
 
+  @Input() Creator: any;
   @Input() strDate;
   datePublished: Date;
 

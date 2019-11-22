@@ -21,6 +21,9 @@ export class WallComponent implements OnInit {
 
   //--------------------------------------------------------
   ngOnInit() {
+    this.intPage = 0;
+    this.intCount = 3;
+    this.callPostService();
   }
 
   //--------------------------------------------------------
@@ -34,6 +37,11 @@ export class WallComponent implements OnInit {
     }, (error) => {
       console.log(error);
     });
+  }
+
+  //--------------------------------------------------------
+  onShowMore() {
+    this.callPostService();
   }
 
 }
