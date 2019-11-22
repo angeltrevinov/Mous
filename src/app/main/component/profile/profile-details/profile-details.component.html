@@ -37,7 +37,15 @@
       </div>
     </div>
     <div class="col-2">
-      edit
+      <div class="row" style="min-width: 70px" *ngIf="false">
+        <button type="button" class="btn btn-outline-light btn-block">Follow</button>
+      </div>
+      <div class="row" style="min-width: 120px;" *ngIf="false">
+        <button type="button" class="btn btn-outline-danger btn-block">Unfollow</button>
+      </div>
+      <div class="row" style="min-width: 70px" *ngIf="true">
+        <button type="button" class="btn btn-outline-warning btn-block">edit</button>
+      </div>
     </div>
   </div>
 </div>
