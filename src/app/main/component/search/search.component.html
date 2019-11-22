@@ -11,12 +11,12 @@
   <hr>
   <!-- Search results -->
   <div class="row">
-    <div *ngIf="!boolShowSpinner && this.searchResult.length > 0" class="col">
+    <div *ngIf="!boolShowSpinner || this.searchResult.length > 0" class="col">
       <div *ngFor="let user of this.searchResult">
         <app-user-info [user]="user"></app-user-info>
       </div>
     </div>
-    <div *ngIf="boolShowSpinner" class="col-12 text-center">
+    <div *ngIf="boolShowSpinner && this.searchResult.length === 0" class="col-12 text-center">
       <app-spinner></app-spinner>
     </div>
     <div class="col-12 text-center">

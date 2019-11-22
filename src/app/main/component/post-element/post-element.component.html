@@ -5,22 +5,28 @@
     </div>
   </div>
   <div class="row">
-    <div class="col">
-      <p>Description</p>
+    <div class="col" style="margin: 10px;">
+      <p> {{ Post.strDescription }}</p>
     </div>
   </div>
   <!-- Carousel -->
-  <div class="row">
+  <div class="row" *ngFor="let photo of Post.arrMedia">
     <div class="col-6" style="padding-top: 5px; padding-bottom: 5px;">
-      <img class="img-fluid" src="https://encrypted-tbn0.gstatic.com/images?q=tbn%3AANd9GcTzxkSe-p_43TKPDvZClmRXQOyitUp79kcCtDu6o95DtdoYfSYy" alt="">
+      <img class="img-fluid" src="{{ photo }}" alt="">
     </div>
   </div>
   <div class="row">
-    <div class="col-3" style="min-width: 100px">
-      <button type="button" class="btn btn-outline-success btn-block"><i class="fa fa-heart-o" aria-hidden="true"></i> Like</button>
+    <div class="col-2" style="min-width: 100px">
+      <button type="button" class="btn btn-outline-success btn-block"><i class="fa fa-heart-o" aria-hidden="true"></i></button>
     </div>
-    <div class="col-3" style="min-width: 140px">
-      <button type="button" class="btn btn-outline-info btn-block"><i class="fa fa-comment-o" aria-hidden="true"></i> Comment</button>
+    <div class="col-2" style="padding-top: 10px">
+      <a>{{ Post.arrLikes }}</a>
+    </div>
+    <div class="col-2" style="min-width: 100px">
+      <button type="button" class="btn btn-outline-info btn-block"><i class="fa fa-comment-o" aria-hidden="true"></i></button>
+    </div>
+    <div class="col-2" style="padding-top: 10px">
+      <a>{{ Post.arrComments }}</a>
     </div>
   </div>
 </div>

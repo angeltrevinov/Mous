@@ -35,8 +35,8 @@ export class ProfileComponent implements OnInit {
     });
     this.onAskForUserDetails();
     this.intPage = 0;
-    this.intCount = 5;
-    this.callSearchService();
+    this.intCount = 3;
+    this.callPostService();
   }
 
   //--------------------------------------------------------
@@ -52,15 +52,24 @@ export class ProfileComponent implements OnInit {
   }
 
   //--------------------------------------------------------
-  callSearchService() {
+  onShowMore() {
+    this.callPostService();
+  }
+
+  //--------------------------------------------------------
+  callPostService() {
+    this.boolShowSpinnerPosts = true;
     this.postService.getPostsFromUser(
       this.userId,
       this.intPage,
       this.intCount
     ).subscribe((result: any) => {
-      console.log(result);
+      this.intPage = this.intPage + this.intCount;
+      this.arrPosts = this.arrPosts.concat(result.userPosts);
+      this.boolShowSpinnerPosts = false;
+      this.boolEndOfPage = result.bEnd;
     }, (error) => {
-      console.log(error);
+      this.boolShowSpinnerPosts = false;
     });
   }
 }
