@@ -48,4 +48,24 @@ export class PostService {
       .set('Count', intCount.toString());
     return this.http.get(BACKENDPOST + '/Wall', {params});
   }
+
+  //--------------------------------------------------------
+  LikePost(
+    strId: string
+  ) {
+    const params = new HttpParams().set('postID', strId);
+
+    return this.http.put(BACKENDPOST + '/Like', {}, {params});
+  }
+
+  //--------------------------------------------------------
+  UnlikePost(
+    strId: string
+  ) {
+    const params = new HttpParams().set(
+      'postID',
+      strId
+    );
+    return this.http.put(BACKENDPOST + '/Unlike', {}, {params});
+  }
 }
