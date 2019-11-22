@@ -48,4 +48,49 @@ export class PostService {
       .set('Count', intCount.toString());
     return this.http.get(BACKENDPOST + '/Wall', {params});
   }
+
+  //--------------------------------------------------------
+  LikePost(
+    strId: string
+  ) {
+    const params = new HttpParams().set('postID', strId);
+
+    return this.http.put(BACKENDPOST + '/Like', {}, {params});
+  }
+
+  //--------------------------------------------------------
+  UnlikePost(
+    strId: string,
+  ) {
+    const params = new HttpParams().set(
+      'postID',
+      strId
+    );
+    return this.http.put(BACKENDPOST + '/Unlike', {}, {params});
+  }
+
+  //--------------------------------------------------------
+  GetPostComments(
+    strId: string,
+    intPage: number,
+    intCount: number,
+  ) {
+    const params = new HttpParams()
+      .set('Page', intPage.toString())
+      .set('Count', intCount.toString());
+    return this.http.get( BACKENDPOST + '/GetPost/' + strId, {params});
+  }
+
+  //--------------------------------------------------------
+  MakeComment(
+    postID: string,
+    strComment: string
+  ) {
+    const datePublished = new Date().toUTCString();
+    return this.http.put(BACKENDPOST + '/MakeComment', {
+      postID,
+      strComment,
+      datePublished
+    });
+  }
 }
