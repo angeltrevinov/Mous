@@ -12,7 +12,7 @@ export class WallComponent implements OnInit {
   intPage: number;
   intCount: number;
   boolEndOfPage: boolean;
-  arrPosts: [];
+  arrPosts = [];
 
   //--------------------------------------------------------
   constructor(
@@ -32,10 +32,13 @@ export class WallComponent implements OnInit {
     this.postService.GetPostsFromWall(
       this.intPage,
       this.intCount
-    ).subscribe((result) => {
-      console.log(result);
+    ).subscribe((result: any) => {
+      this.intPage = this.intPage + this.intCount;
+      this.arrPosts = this.arrPosts.concat(result.wallResult);
+      this.boolShowSpinner = false;
+      this.boolEndOfPage = result.bEnd;
     }, (error) => {
-      console.log(error);
+      this.boolShowSpinner = false;
     });
   }
 
