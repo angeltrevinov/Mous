@@ -302,10 +302,14 @@ router.get('/GetPost/:postID', (req, res, next) => {
                                 const path = url + '/Post_Images/' + authorData.strUserName + '/'
 
                                 // Complete the user data
-                                tempObj['strUserName'] = authorData.strUserName
-                                tempObj['strName'] = authorData.strName
-                                tempObj['imgProfile'] = path + authorData.imgProfile
-                                tempObj['strAuthorID'] = authorData._id
+                                let authorObj = {
+                                    strUserName: authorData.strUserName,
+                                    strName: authorData.strName,
+                                    imgProfile: path + authorData.imgProfile,
+                                    strAuthorID: authorData._id
+                                }
+
+                                tempObj['authorObj'] = authorObj;
 
                                 // Add the comment to the array
                                 arrToAppend.push(tempObj)
@@ -384,59 +388,137 @@ router.get('/GetPosts', (req, res, next) => {
         // If the user exists
         if (!err) {
 
-            // Make the query to get the posts of that user
-            let postsQuery = getPosts(req.query.userID, req.query.Count, req.query.Page);
+            // Check if the current user is logged in
+            if (typeof req.headers['authorization'] !== 'undefined') {
+                console.log("here")
+                // Verify the token
+                // Split at the space
+                const bearer = req.headers['authorization'].split(' ');
+                // Get token from array
+                const bearerToken = bearer[1];
+                // Set the token
+                req.token = bearerToken;
 
-            // Execute the query
-            postsQuery.exec((erro, postData) => {
+                // Verify the token
+                jsonwebtoken.verify(req.token, 'SecretKey', (err, authData) => {
 
-                // If everything was fine...
-                if (!erro) {
-                    // To append the array of posts to send
-                    let formatPosts = []
+                    // Check that it has the authentication data
+                    if (!err) {
+                        // Make the query to get the posts of that user
+                        let postsQuery = getPosts(req.query.userID, req.query.Count, req.query.Page);
 
-                    if (postData.length > 0) {
-                        // Built the server url
-                        const url = req.protocol + '://' + req.get("host");
+                        // Execute the query
+                        postsQuery.exec((erro, postData) => {
 
-                        // Built the image path
-                        const path = url + '/Post_Images/' + userData.strUserName + '/'
+                            // If everything was fine...
+                            if (!erro) {
+                                // To append the array of posts to send
+                                let formatPosts = []
 
-                        postData.forEach((ele) => {
+                                if (postData.length > 0) {
+                                    // Built the server url
+                                    const url = req.protocol + '://' + req.get("host");
 
-                            let arrMedia = ele['arrMedia'].map((index) => {
-                                return path + index;
-                            });
+                                    // Built the image path
+                                    const path = url + '/Post_Images/' + userData.strUserName + '/'
 
-                            formatPosts.push({
-                                _id: ele._id,
-                                strAuthorID: ele.strAuthorID,
-                                strAuthorUserName: userData.strUserName,
-                                strName: userData.strName,
-                                imgProfile: path + userData.imgProfile,
-                                strDescription: ele.strDescription,
-                                datePublished: ele.datePublished,
-                                arrComments: ele.arrComments.length,
-                                arrLikes: ele.arrLikes.length,
-                                arrMedia
-                            })
+                                    postData.forEach((ele) => {
+
+                                        let arrMedia = ele['arrMedia'].map((index) => {
+                                            return path + index;
+                                        });
+
+                                        formatPosts.push({
+                                            _id: ele._id,
+                                            authorObj: {
+                                                strAuthorID: ele.strAuthorID,
+                                                strAuthorUserName: userData.strUserName,
+                                                strName: userData.strName,
+                                                imgProfile: path + userData.imgProfile,
+                                            },
+                                            strDescription: ele.strDescription,
+                                            datePublished: ele.datePublished,
+                                            arrComments: ele.arrComments.length,
+                                            arrLikes: ele.arrLikes.length,
+                                            bLike: searchUserInStringArray(ele.arrLikes, authData.nUser['_id']),
+                                            arrMedia
+                                        })
+                                    });
+                                }
+
+                                // Return the success code and the array
+                                return res.status(201)
+                                    .json({
+                                        bEnd: (formatPosts.length < req.query.Count),
+                                        userPosts: formatPosts
+                                    });
+
+                            } else {
+                                // Return the error code
+                                return res.status(500)
+                                    .json({ message: "Error getting the posts" });
+                            }
                         });
                     }
+                });
+            } else {
 
-                    // Return the success code and the array
-                    return res.status(201)
-                        .json({
-                            bEnd: (formatPosts.length < req.query.Count),
-                            userPosts: formatPosts
-                        });
+                // Make the query to get the posts of that user
+                let postsQuery = getPosts(req.query.userID, req.query.Count, req.query.Page);
 
-                } else {
-                    // Return the error code
-                    return res.status(500)
-                        .json({ message: "Error getting the posts" });
-                }
-            });
+                // Execute the query
+                postsQuery.exec((erro, postData) => {
 
+                    // If everything was fine...
+                    if (!erro) {
+                        // To append the array of posts to send
+                        let formatPosts = []
+
+                        if (postData.length > 0) {
+                            // Built the server url
+                            const url = req.protocol + '://' + req.get("host");
+
+                            // Built the image path
+                            const path = url + '/Post_Images/' + userData.strUserName + '/'
+
+                            postData.forEach((ele) => {
+
+                                let arrMedia = ele['arrMedia'].map((index) => {
+                                    return path + index;
+                                });
+
+                                formatPosts.push({
+                                    _id: ele._id,
+                                    authorObj: {
+                                        strAuthorID: ele.strAuthorID,
+                                        strAuthorUserName: userData.strUserName,
+                                        strName: userData.strName,
+                                        imgProfile: path + userData.imgProfile,
+                                    },
+                                    strDescription: ele.strDescription,
+                                    datePublished: ele.datePublished,
+                                    arrComments: ele.arrComments.length,
+                                    arrLikes: ele.arrLikes.length,
+                                    bLike: false,
+                                    arrMedia
+                                })
+                            });
+                        }
+
+                        // Return the success code and the array
+                        return res.status(201)
+                            .json({
+                                bEnd: (formatPosts.length < req.query.Count),
+                                userPosts: formatPosts
+                            });
+
+                    } else {
+                        // Return the error code
+                        return res.status(500)
+                            .json({ message: "Error getting the posts" });
+                    }
+                });
+            }
             // If the user does not exist
         } else {
             return res.status(404)
@@ -513,14 +595,17 @@ router.get('/Wall', verifyToken, (req, res, nect) => {
                                             // Return the new post object
                                             return {
                                                 _id: elem._id,
-                                                strAuthorID: elem.strAuthorID,
-                                                strAuthorUserName: authorObject.strUserName,
-                                                strName: authorObject.strName,
-                                                imgProfile: path + authorObject.imgProfile,
+                                                authorObj: {
+                                                    strAuthorID: elem.strAuthorID,
+                                                    strAuthorUserName: authorObject.strUserName,
+                                                    strName: authorObject.strName,
+                                                    imgProfile: path + authorObject.imgProfile
+                                                },
                                                 strDescription: elem.strDescription,
                                                 datePublished: elem.datePublished,
                                                 arrComments: elem.arrComments.length,
                                                 arrLikes: elem.arrLikes.length,
+                                                bLike: searchUserInStringArray(elem.arrLikes, authData.nUser['_id']),
                                                 arrMedia
                                             }
 
@@ -785,7 +870,7 @@ router.put('/MakeComment', verifyToken, (req, res, next) => {
 
 // To get the list of 
 router.get('/Likes/:postID', (req, res, next) => {
-    
+
     // Get the post information
     PostModel.findById(req.params.postID)
         .then((postObject) => {
@@ -848,9 +933,10 @@ router.get('/Likes/:postID', (req, res, next) => {
         // If the query has an error
         .catch((err) => {
             return res.status(404)
-                    .json({ message: "Post not found" })
+                .json({ message: "Post not found" })
         });
 });
+
 
 // Export the enpoints
 module.exports = router;
