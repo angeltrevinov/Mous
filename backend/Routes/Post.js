@@ -305,6 +305,7 @@ router.get('/GetPost/:postID', (req, res, next) => {
                                 tempObj['strUserName'] = authorData.strUserName
                                 tempObj['strName'] = authorData.strName
                                 tempObj['imgProfile'] = path + authorData.imgProfile
+                                tempObj['strAuthorID'] = authorData._id
 
                                 // Add the comment to the array
                                 arrToAppend.push(tempObj)
@@ -330,7 +331,7 @@ router.get('/GetPost/:postID', (req, res, next) => {
                                     // Return the final array
                                     return res.status(200).json({
                                         bEnd: (iFinal > newArr.length),
-                                        searchResult: newArr
+                                        commentsResult: newArr
                                     });
                                 }
 
@@ -543,8 +544,7 @@ router.get('/Wall', verifyToken, (req, res, nect) => {
                                         if (index === userFollowing.length - 1) {
                                             return res.status(200).json({
                                                 bEnd: (iFinal > newArr.length),
-                                                size: newArr.length,
-                                                searchResult: newArr
+                                                wallResult: newArr
                                             });
                                         }
                                     });
@@ -784,8 +784,72 @@ router.put('/MakeComment', verifyToken, (req, res, next) => {
 
 
 // To get the list of 
-router.get('Like/:id', (req, res, next) => {
+router.get('/Likes/:postID', (req, res, next) => {
+    
+    // Get the post information
+    PostModel.findById(req.params.postID)
+        .then((postObject) => {
 
+            if (postObject) {
+                // Get the current user arr of following accounts
+                let postComments = postObject['arrLikes'];
+                // Temporal to concat the likes users
+                let arrToAppend = []
+
+                // Iterate through the users that leave a like
+                postComments.forEach((strAuthorID, index) => {
+
+                    // Get the user data
+                    UserModel.findById({ _id: strAuthorID })
+                        .exec((err, authorData) => {
+
+                            // If everything is fine...
+                            if (!err) {
+                                // Temporal obj
+                                let tempObj = {}
+
+                                // Built the server url
+                                const url = req.protocol + '://' + req.get("host");
+
+                                // Built the image path
+                                const path = url + '/Post_Images/' + authorData.strUserName + '/'
+
+                                // Complete the user data
+                                tempObj['strName'] = authorData.strName
+                                tempObj['imgProfile'] = path + authorData.imgProfile
+                                tempObj['strAuthorID'] = authorData._id
+
+                                // Add the comment to the array
+                                arrToAppend.push(tempObj)
+
+                                // If it get the data of all the comments
+                                if (arrToAppend.length === postComments.length) {
+
+                                    // Return the final array
+                                    return res.status(200).json({
+                                        likesResult: arrToAppend
+                                    });
+                                }
+
+                            } else {
+                                // If there was an error at the query execution
+                                return res.status(500)
+                                    .json({ message: "Error" })
+                            }
+                        });
+                });
+
+                // If the post do not exists
+            } else {
+                return res.status(404)
+                    .json({ message: "Post not found" })
+            }
+        })
+        // If the query has an error
+        .catch((err) => {
+            return res.status(404)
+                    .json({ message: "Post not found" })
+        });
 });
 
 // Export the enpoints
