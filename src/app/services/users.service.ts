@@ -109,4 +109,16 @@ export class UsersService {
       .set('UserToUnfollow', _id);
     return this.http.post(BACKENDUSER + '/Unfollow', {}, {params});
   }
+
+  /*
+  *  getUserProfile
+  *
+  * @param: strUserName: string of the username
+  * */
+  ///-------------------------------------------------------
+  GetUserProfile(
+    strUserName: string
+  ) {
+    return this.http.get(BACKENDUSER);
+  }
 }
