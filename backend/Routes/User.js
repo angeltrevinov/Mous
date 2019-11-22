@@ -363,7 +363,7 @@ router.get('/Profile', (req, res) => {
                             if (!erro) {
 
                                 // Get if the current user follows or not the searchUser
-                                let bFollowing = searchUserInStringArray(curUser['arrFollowing', searchUser._id])
+                                let bFollowing = searchUserInStringArray(curUser['arrFollowing'], searchUser._id)
 
                                 // Return the success code and the JSON with the user data
                                 return res.status(201)
@@ -398,6 +398,7 @@ router.get('/Profile', (req, res) => {
                 // Return the success code and the JSON with the user data
                 return res.status(201)
                     .json({
+                        _id: searchUser._id,
                         strUserName: searchUser.strUserName,
                         strName: searchUser.strName,
                         strDescription: searchUser.strDescription,
