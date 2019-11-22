@@ -23,7 +23,7 @@ const router = express.Router();
 // ################# Auxiliar functions #################
 
 /**
- * Function to verify the JWT   
+ * Function to verify the JWT
  */
 function verifyToken(req, res, next) {
     // Getthe auth header value
@@ -52,9 +52,9 @@ function verifyToken(req, res, next) {
 
 /**
  * Function to search if a given user name is in an array of usernames but in string format
- * 
+ *
  * @param {Array} arrUsers An arry with the arrUsers object
- * @param {String} userName A string with the username you are looking 
+ * @param {String} userName A string with the username you are looking
  */
 function searchUserInStringArray(arrUsers, userName) {
 
@@ -69,11 +69,11 @@ function searchUserInStringArray(arrUsers, userName) {
 
 /**
  * Function that returns a query with the post of a given user
- * 
+ *
  * @param {String} userID  The ID of the user you want the posts from
  * @param {Int} Count  Number of objects you want it to return
  * @param {Int} Page   Number of pagination
- * @param {Array} parameters Array with the attr you want it to return 
+ * @param {Array} parameters Array with the attr you want it to return
  *                          (If all, do not add this parameter)
  */
 function getPosts(userID, Count, Page, parameters = null) {
@@ -105,10 +105,10 @@ function getUserInfo(userID, parameter = null) {
 
 /**
  * To sort an array of objects
- * 
+ *
  * @param {String} Field The attr you want to sort by
  * @param {Boolean} Reverse If it is ascending or descending
- * @param {Operato} Primer 
+ * @param {Operato} Primer
  */
 const sort_by = (Field, Reverse, Primer) => {
 
@@ -162,7 +162,7 @@ router.post('/MakePost', verifyToken, (req, res, next) => {
                     // Set where to save it. Ej: ./backend/Post_Images/@username
                     cb(null, "./backend/Post_Images/" + authData.nUser['strUserName']);
                 },
-                // Format the image name 
+                // Format the image name
                 filename: (requ, file, cb) => {
                     // Take the origianl name, pass all to lower case and replace blanckspaces with -
                     const name = file.originalname.toLocaleLowerCase().split(' ').join('-');
@@ -246,7 +246,7 @@ router.post('/MakePost', verifyToken, (req, res, next) => {
                 }
             });
 
-            // If the user is not logged in 
+            // If the user is not logged in
         } else {
             // Send the error message and code
             return res.status(401)
@@ -256,7 +256,7 @@ router.post('/MakePost', verifyToken, (req, res, next) => {
 });
 
 
-// To get the list of 
+// To get the list of
 router.get('/GetPost/:postID', (req, res, next) => {
 
     let missingAttr = null      // Var to get if a attr is missing
@@ -330,7 +330,7 @@ router.get('/GetPost/:postID', (req, res, next) => {
                                     newArr = newArr.slice(iBegin, iFinal)
 
                                     // Sort by the date
-                                    newArr = newArr.sort(sort_by('datePublished', true, Date));
+                                    //newArr = newArr.sort(sort_by('datePublished', true, Date));
 
                                     // Return the final array
                                     return res.status(200).json({
@@ -565,7 +565,7 @@ router.get('/Wall', verifyToken, (req, res, nect) => {
                     // Iterate through the following users
                     userFollowing.forEach((userID, index) => {
 
-                        // Get the author 
+                        // Get the author
                         UserModel.findById({ _id: userID })
                             .then((authorObject) => {
 
@@ -679,7 +679,7 @@ router.put('/Like', verifyToken, (req, res, next) => {
                                 { _id: req.query.postID },
                                 { $push: { 'arrLikes': authData.nUser['_id'] } },
 
-                                // What to do after de update 
+                                // What to do after de update
                                 // (It is needed to the update finish correctly)
                                 function (err, doc) {
                                     if (!err) {
@@ -781,7 +781,7 @@ router.put('/Unlike', verifyToken, (req, res, next) => {
                 }
             });
 
-            // If the user is not logged in 
+            // If the user is not logged in
         } else {
             // Send the error message and code
             return res.status(401)
@@ -858,7 +858,7 @@ router.put('/MakeComment', verifyToken, (req, res, next) => {
                 }
             });
 
-            // If the user is not logged in 
+            // If the user is not logged in
         } else {
             // Send the error message and code
             return res.status(401)
@@ -868,7 +868,7 @@ router.put('/MakeComment', verifyToken, (req, res, next) => {
 });
 
 
-// To get the list of 
+// To get the list of
 router.get('/Likes/:postID', (req, res, next) => {
 
     // Get the post information

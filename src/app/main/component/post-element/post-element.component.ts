@@ -1,5 +1,6 @@
 import {Component, Input, OnInit} from '@angular/core';
 import {PostService} from '../../../services/post.service';
+import {Router} from '@angular/router';
 
 @Component({
   selector: 'app-post-element',
@@ -11,11 +12,13 @@ export class PostElementComponent implements OnInit {
   @Input() Post: any;
 
   //--------------------------------------------------------
-  constructor(private postService: PostService) { }
+  constructor(
+    private postService: PostService,
+    private router: Router
+  ) { }
 
   //--------------------------------------------------------
   ngOnInit() {
-    console.log(this.Post);
   }
 
   //--------------------------------------------------------
@@ -36,6 +39,11 @@ export class PostElementComponent implements OnInit {
     }, (error) => {
       console.log(error);
     });
+  }
+
+  //--------------------------------------------------------
+  GoToDetails() {
+    this.router.navigate(['/Post', this.Post._id]);
   }
 
 }

@@ -16,6 +16,7 @@ import {PostService} from '../services/post.service';
 import { PostElementComponent } from './component/post-element/post-element.component';
 import { CreatorPostComponent } from './component/post-element/creator-post/creator-post.component';
 import { ProfileDetailsComponent } from './component/profile/profile-details/profile-details.component';
+import { PostCommentsComponent } from './component/post-comments/post-comments.component';
 
 @NgModule({
   declarations: [
@@ -30,6 +31,7 @@ import { ProfileDetailsComponent } from './component/profile/profile-details/pro
     PostElementComponent,
     CreatorPostComponent,
     ProfileDetailsComponent,
+    PostCommentsComponent,
   ],
   imports: [
     CommonModule,
