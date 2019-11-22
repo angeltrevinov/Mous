@@ -1,5 +1,6 @@
 import { Component, OnInit } from '@angular/core';
 import {ActivatedRoute, ParamMap, Router} from '@angular/router';
+import {UsersService} from '../../../services/users.service';
 
 @Component({
   selector: 'app-profile',
@@ -8,19 +9,35 @@ import {ActivatedRoute, ParamMap, Router} from '@angular/router';
 })
 export class ProfileComponent implements OnInit {
 
-  userName: string;
+  userId: string;
+  User: any;
+  boolShowSpinnerDetails: boolean;
+  boolError = false;
 
   //--------------------------------------------------------
   constructor(
     private route: ActivatedRoute,
-    private router: Router
+    private router: Router,
+    private usersService: UsersService
   ) { }
 
   //--------------------------------------------------------
   ngOnInit() {
     this.route.paramMap.subscribe((result: ParamMap) => {
-      this.userName = result.get('id');
+      this.userId = result.get('id');
     });
+    this.onAskForUserDetails();
   }
 
+  //--------------------------------------------------------
+  onAskForUserDetails() {
+    this.boolShowSpinnerDetails = true;
+    this.usersService.GetUserProfile(this.userId).subscribe((result) => {
+      this.User = result;
+      this.boolShowSpinnerDetails = false;
+    }, (error) => {
+      this.boolError = true;
+      this.boolShowSpinnerDetails = false;
+    });
+  }
 }

@@ -15,6 +15,7 @@ import { CreatePostComponent } from './component/create-post/create-post.compone
 import {PostService} from '../services/post.service';
 import { PostElementComponent } from './component/post-element/post-element.component';
 import { CreatorPostComponent } from './component/post-element/creator-post/creator-post.component';
+import { ProfileDetailsComponent } from './component/profile/profile-details/profile-details.component';
 
 @NgModule({
   declarations: [
@@ -28,6 +29,7 @@ import { CreatorPostComponent } from './component/post-element/creator-post/crea
     CreatePostComponent,
     PostElementComponent,
     CreatorPostComponent,
+    ProfileDetailsComponent,
   ],
   imports: [
     CommonModule,

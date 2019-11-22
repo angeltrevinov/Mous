@@ -20,7 +20,7 @@
       <app-spinner></app-spinner>
     </div>
     <div class="col-12 text-center">
-      <button *ngIf="!boolShowSpinner && this.searchResult.length > 0" class="btn btn-outline-light btn-lg" (click)="onShowMore()">
+      <button *ngIf="!boolShowSpinner && this.searchResult.length > 0 && !this.boolEndOFPage" class="btn btn-outline-light btn-lg" (click)="onShowMore()">
         Show More
       </button>
     </div>
