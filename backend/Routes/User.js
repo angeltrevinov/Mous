@@ -368,6 +368,7 @@ router.get('/Profile', (req, res) => {
                                 // Return the success code and the JSON with the user data
                                 return res.status(201)
                                     .json({
+                                        _id: searchUser._id,
                                         strUserName: searchUser.strUserName,
                                         strName: searchUser.strName,
                                         strDescription: searchUser.strDescription,
