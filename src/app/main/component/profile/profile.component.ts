@@ -1,6 +1,7 @@
 import { Component, OnInit } from '@angular/core';
 import {ActivatedRoute, ParamMap, Router} from '@angular/router';
 import {UsersService} from '../../../services/users.service';
+import {PostService} from '../../../services/post.service';
 
 @Component({
   selector: 'app-profile',
@@ -13,12 +14,18 @@ export class ProfileComponent implements OnInit {
   User: any;
   boolShowSpinnerDetails: boolean;
   boolError = false;
+  intPage: number;
+  intCount: number;
+  boolEndOfPage: boolean;
+  boolShowSpinnerPosts: boolean;
+  arrPosts = [];
 
   //--------------------------------------------------------
   constructor(
     private route: ActivatedRoute,
     private router: Router,
-    private usersService: UsersService
+    private usersService: UsersService,
+    private postService: PostService
   ) { }
 
   //--------------------------------------------------------
@@ -27,6 +34,9 @@ export class ProfileComponent implements OnInit {
       this.userId = result.get('id');
     });
     this.onAskForUserDetails();
+    this.intPage = 0;
+    this.intCount = 5;
+    this.callSearchService();
   }
 
   //--------------------------------------------------------
@@ -38,6 +48,19 @@ export class ProfileComponent implements OnInit {
     }, (error) => {
       this.boolError = true;
       this.boolShowSpinnerDetails = false;
+    });
+  }
+
+  //--------------------------------------------------------
+  callSearchService() {
+    this.postService.getPostsFromUser(
+      this.userId,
+      this.intPage,
+      this.intCount
+    ).subscribe((result: any) => {
+      console.log(result);
+    }, (error) => {
+      console.log(error);
     });
   }
 }

@@ -20,7 +20,6 @@ export class ProfileDetailsComponent implements OnInit, OnChanges {
   //--------------------------------------------------------
   ngOnChanges(changes: SimpleChanges): void {
     if(this.User) {
-      console.log(this.User);
       this.boolRecievedUser = true;
     }
   }
