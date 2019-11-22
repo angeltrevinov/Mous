@@ -7,6 +7,9 @@ const fs = require('fs')
 // Import Project models
 const UsersModel = require('../Models/Users.js');
 
+// Improt confiig
+const { SECRETKEY } = require('../../config.js');
+
 // Express app
 const router = express.Router();
 
@@ -241,7 +244,7 @@ router.post('/Login', (req, res) => {
                         delete nUser.strPassword
 
                         // Make the token from the User object
-                        jsonwebtoken.sign({ nUser }, 'SecretKey', (err, token) => {
+                        jsonwebtoken.sign({ nUser }, SECRETKEY, (err, token) => {
                             // Return the succes code, the user information and the token
                             return res.status(201).json({
                                 token: token
@@ -272,7 +275,7 @@ router.post('/Login', (req, res) => {
 router.get('/getLoginInfo', verifyToken, (req, res) => {
 
     // To verify the JWT
-    jsonwebtoken.verify(req.token, 'SecretKey', (err, authData) => {
+    jsonwebtoken.verify(req.token, SECRETKEY, (err, authData) => {
         // Check that it is logged in
         if (!err) {
 
@@ -349,7 +352,7 @@ router.get('/Profile', (req, res) => {
                 req.token = bearerToken;
 
                 // Verify the token
-                jsonwebtoken.verify(req.token, 'SecretKey', (err, authData) => {
+                jsonwebtoken.verify(req.token, SECRETKEY, (err, authData) => {
 
                     // Check that it has the authentication data
                     if (!err) {
@@ -424,7 +427,7 @@ router.get('/Profile', (req, res) => {
 // Function to follow another user
 router.post('/Follow', verifyToken, (req, res) => {
     // To verify the JWT
-    jsonwebtoken.verify(req.token, 'SecretKey', (err, authData) => {
+    jsonwebtoken.verify(req.token, SECRETKEY, (err, authData) => {
         // Check that it is logged in
         if (!err) {
 
@@ -516,7 +519,7 @@ router.post('/Follow', verifyToken, (req, res) => {
 // Function to unfollow another user
 router.post('/Unfollow', verifyToken, (req, res) => {
     // To verify the JWT
-    jsonwebtoken.verify(req.token, 'SecretKey', (err, authData) => {
+    jsonwebtoken.verify(req.token, SECRETKEY, (err, authData) => {
         // Check that it is logged in
         if (!err) {
 
@@ -667,7 +670,7 @@ router.get('/Search', (req, res, next) => {
                     req.token = bearerToken;
 
                     // Verify the token
-                    jsonwebtoken.verify(req.token, 'SecretKey', (err, authData) => {
+                    jsonwebtoken.verify(req.token, SECRETKEY, (err, authData) => {
 
                         // Check that it has the authentication data
                         if (!err) {

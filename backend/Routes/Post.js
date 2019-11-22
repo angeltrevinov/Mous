@@ -9,6 +9,9 @@ const fs = require("fs");
 const PostModel = require('../Models/Posts.js');
 const UserModel = require('../Models/Users.js');
 
+// Improt confiig
+const { SECRETKEY } = require('../../config.js');
+
 // Valid extension
 const MIME_TYPE_MAP = {
     'image/png': 'png',
@@ -132,7 +135,7 @@ const sort_by = (Field, Reverse, Primer) => {
 // Endpoint to make a post
 router.post('/MakePost', verifyToken, (req, res, next) => {
     // Verify the User token
-    jsonwebtoken.verify(req.token, 'SecretKey', (err, authData) => {
+    jsonwebtoken.verify(req.token, SECRETKEY, (err, authData) => {
 
         // If the token is valid...
         if (!err) {

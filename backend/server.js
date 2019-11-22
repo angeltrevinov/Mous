@@ -3,6 +3,7 @@ const express = require('express');
 const bodyparser = require('body-parser');
 const mongoose = require('mongoose');
 const path = require('path')
+const { DATABASE_URL } = require('../config.js');
 
 
 // Setting the app
@@ -16,7 +17,7 @@ const postRoutes = require('./Routes/Post.js');
 
 
 // Make the connection with the MongoDB
-mongoose.connect("mongodb+srv://ServerApp:GAJX3Xks967nzqd1@mous-cluster-qncgc.mongodb.net/MOUS-Cluster", { useNewUrlParser: true, useUnifiedTopology: true, useCreateIndex: true, useFindAndModify: false })
+mongoose.connect(DATABASE_URL, { useNewUrlParser: true, useUnifiedTopology: true, useCreateIndex: true, useFindAndModify: false })
   // If everything was find, print the next message
   .then(() => {
     console.log('Connected to Data Base')
