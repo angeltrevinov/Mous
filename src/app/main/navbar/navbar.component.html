@@ -1,0 +1,39 @@
+<nav class="navbar navbar-dark navbar-expand-lg fixed-top bg-white portfolio-navbar gradient">
+  <div class="container">
+    <a class="navbar-brand mx-auto logo" routerLink="/Wall">Mous</a>
+    <button data-toggle="collapse" class="navbar-toggler" data-target="#navbarNav">
+      <span class="sr-only">Toggle navigation</span>
+      <span class="navbar-toggler-icon"></span>
+    </button>
+    <div class="collapse navbar-collapse" id="navbarNav">
+      <ul class="nav navbar-nav ml-auto">
+        <li class="nav-item" style="height: 45px;" *ngIf="boolToken && userRecieve">
+          <a class="nav-link" [routerLink]="['/Profile', userInfo._id]" style="padding-bottom: 0px !important;">
+            <div class="row">
+              <div class="col-lg-4 col-2" style="min-width: 45px">
+                <img
+                  onerror="this.onerror=null; this.src='../../../../assets/images/user.png'"
+                  src="{{ userInfo.imgProfile }}">
+              </div>
+              <div class="col-lg-8 col-10 ml-auto">
+                {{ userInfo.strName }}
+              </div>
+            </div>
+          </a>
+        </li>
+        <li class="nav-item">
+          <form [formGroup]="searchForm" (submit)="onSearch()"  class="form-inline my-2 my-lg-0">
+            <input class="form-control mr-sm-2" type="search" formControlName="SearchTerm" placeholder="Search" aria-label="Search">
+            <button class="btn btn-outline-light my-2 my-sm-0" type="submit">Search</button>
+          </form>
+        </li>
+        <li class="nav-item" role="presentation" *ngIf="!boolToken">
+          <a class="nav-link" routerLink="/Login">Login</a>
+        </li>
+        <li class="nav-item" role="presentation" *ngIf="boolToken">
+          <a class="nav-link" (click)="onLogOut()">Logout</a>
+        </li>
+      </ul>
+    </div>
+  </div>
+</nav>

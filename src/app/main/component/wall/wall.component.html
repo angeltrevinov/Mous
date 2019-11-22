@@ -1,0 +1,18 @@
+<div class="container-fluid">
+  <!-- Posts -->
+  <div class="row">
+    <div *ngIf="!boolShowSpinner || this.arrPosts.length > 0" class="col">
+      <div *ngFor="let post of this.arrPosts">
+        <app-post-element [Post]="post"></app-post-element>
+      </div>
+    </div>
+    <div *ngIf="boolShowSpinner && this.arrPosts.length == 0" class="col-12 text-center">
+      <app-spinner></app-spinner>
+    </div>
+    <div class="col-12 text-center" style="margin: 10px;">
+      <button *ngIf="!boolShowSpinner && this.arrPosts.length > 0 && !this.boolEndOfPage" class="btn btn-outline-light btn-lg" (click)="onShowMore()">
+        Show More
+      </button>
+    </div>
+  </div>
+</div>

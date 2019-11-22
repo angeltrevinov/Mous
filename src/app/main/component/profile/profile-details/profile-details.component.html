@@ -1,0 +1,53 @@
+<div class="costumeContainer" *ngIf="boolRecievedUser">
+  <div class="row">
+    <div class="col">
+      <img
+        onerror="this.onerror=null; this.src='../../../../../assets/images/DefaultBanner.jpg'"
+        src="{{ User.imgBanner }}" alt="" style="width: 100%; height: 200px">
+    </div>
+  </div>
+  <div class="row conainerUser">
+    <div class="col-3 text-center" style="min-width: 80px; max-width: 200px;">
+      <img
+        onerror="this.onerror=null; this.src='../../../../../assets/images/user.png'"
+        src="{{ User.imgProfile }}" alt="" class="rounded-circle">
+    </div>
+    <div class="col-7">
+      <div class="row">
+        <div class="col">
+          <h5> {{ User.strName }}</h5>
+        </div>
+        <div class="col">
+          <p> {{ User.strUserName }}</p>
+        </div>
+      </div>
+      <div class="row" *ngIf="User.strDescription">
+        <p> {{ User.strDescription }}</p>
+      </div>
+      <div class="row" *ngIf="User.strLocation">
+        <p>{{ User.strLocation }}</p>
+      </div>
+      <div class="row">
+        <div class="col">
+          <p>Following: {{ User.intFollowing }}</p>
+        </div>
+        <div class="col">
+          <p>Followers: {{ User.intFollowers}}</p>
+        </div>
+      </div>
+    </div>
+    <div class="col-2">
+      <div class="row" style="min-width: 70px" *ngIf="!User.bFollowing && User.strUserName !== UserName">
+        <button type="button" class="btn btn-outline-light btn-block" (click)="onFollow()">Follow</button>
+      </div>
+      <div class="row" style="min-width: 120px;" *ngIf="User.bFollowing">
+        <button type="button" class="btn btn-outline-danger btn-block" (click)="onUnFollow()">Unfollow</button>
+      </div>
+      <div class="row" style="min-width: 70px" *ngIf="!User.bFollowing && User.strUserName === UserName">
+        <button type="button" class="btn btn-outline-warning btn-block">edit</button>
+      </div>
+    </div>
+  </div>
+</div>
+<app-alert [strMessage]="strMessage" [strType]="strType"></app-alert>
+

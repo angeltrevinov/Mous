@@ -1,0 +1,17 @@
+<div class="container-fluid">
+  <div class="row" style="padding-bottom: 70px;">
+    <app-navbar></app-navbar>
+  </div>
+  <div class="row justify-content-center">
+    <div class="col">
+      <router-outlet></router-outlet>
+    </div>
+  </div>
+</div>
+<a *ngIf="boolSingIn" style="cursor: pointer" class="float" data-toggle="modal" data-target="#createPost">
+  <i class="fa fa-plus my-float"></i>
+</a>
+<!-- Modal -->
+<div class="modal fade" id="createPost" tabindex="-1" role="dialog" aria-labelledby="exampleModalCenterTitle" aria-hidden="true">
+  <app-create-post></app-create-post>
+</div>

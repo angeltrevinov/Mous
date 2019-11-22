@@ -1,0 +1,21 @@
+<div class="col">
+  <div class="row">
+    <div class="col-1" style="min-width: 65px; max-width: 200px;">
+      <a [routerLink]="['/Profile', Creator.strAuthorID]"><img
+        onerror="this.onerror=null; this.src='../../../../../assets/images/user.png'"
+        src="{{ Creator.imgProfile }}"
+        class="rounded-circle" alt=""></a>
+    </div>
+    <div class="col-7">
+      <div class="col">
+        <a [routerLink]="['/Profile', Creator.strAuthorID]"> {{ Creator.strName }}</a>
+      </div>
+      <div class="col">
+        <a [routerLink]="['/Profile', Creator.strAuthorID]">{{ Creator.strAuthorUserName }}</a>
+      </div>
+    </div>
+    <div class="col-3 text-right">
+      {{ this.datePublished.toLocaleString() }}
+    </div>
+  </div>
+</div>
