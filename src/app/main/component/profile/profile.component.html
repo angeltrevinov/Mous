@@ -1,19 +1,28 @@
-<div class="container-fluid">
-  <!-- Banner -->
-  <div class="row" id="containerBanner">
-    <div class="col">
-      <img src="http://orig09.deviantart.net/51f6/f/2013/192/8/c/the_head_tilt_by_jailboticus-d6d2srq.gif" alt="">
-    </div>
-  </div>
-  <!-- User Info -->
-  <div class="row">
-    <div class="col">
-      <app-user-info *ngIf="false"></app-user-info>
-    </div>
-  </div>
+<div class="container-fluid" *ngIf="!boolShowSpinnerDetails && !boolError">
+  <!-- User info here-->
+  <app-profile-details [User]="User"></app-profile-details>
+
+  <!-- Posts -->
   <div class="row">
     <div class="col">
       <app-post-element></app-post-element>
+    </div>
+  </div>
+</div>
+<!-- Spinner -->
+<div class="container-fluid" *ngIf="boolShowSpinnerDetails">
+  <div class="row">
+    <div class="col-12 text-center">
+      <app-spinner></app-spinner>
+    </div>
+  </div>
+</div>
+
+<!-- no user found -->
+<div class="container-fluid" *ngIf="!boolShowSpinnerDetails && boolError" style="padding: 50px;">
+  <div class="row">
+    <div class="col-12 text-center">
+      no user found
     </div>
   </div>
 </div>

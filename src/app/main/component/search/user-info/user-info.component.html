@@ -18,7 +18,7 @@
       </p>
     </div>
     <div class="col-3 text-center" style="padding-left: 0px">
-      <button *ngIf="!user.bFollowing && UserName != user.strUserName" (click)="onFollow()" class="btn btn-outline-light justify-content-center" type="button">Follow</button>
+      <button *ngIf="!user.bFollowing && UserName != user.strUserName" (click)="onFollow()" style="font-size: 1.8vmax;" class="btn btn-outline-light justify-content-center" type="button">Follow</button>
       <button  *ngIf="user.bFollowing" (click)="onUnFollow()" style="font-size: 1.3vmax;" class="btn btn-outline-danger justify-content-center" type="button">Unfollow</button>
     </div>
   </div>

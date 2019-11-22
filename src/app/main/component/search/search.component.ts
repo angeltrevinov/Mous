@@ -16,6 +16,7 @@ export class SearchComponent implements OnInit {
   boolShowSpinner: boolean;
   intPage: number;
   intCount: number;
+  boolEndOFPage: boolean;
 
   //--------------------------------------------------------
   constructor(
@@ -70,6 +71,7 @@ export class SearchComponent implements OnInit {
         this.intPage = this.intPage + this.intCount;
         this.searchResult = this.searchResult.concat(result.searchResult);
         this.boolShowSpinner = false;
+        this.boolEndOFPage = result.bEnd;
       }, (error) => {
         this.boolShowSpinner = false;
       });
