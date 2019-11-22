@@ -390,7 +390,6 @@ router.get('/GetPosts', (req, res, next) => {
 
             // Check if the current user is logged in
             if (typeof req.headers['authorization'] !== 'undefined') {
-                console.log("here")
                 // Verify the token
                 // Split at the space
                 const bearer = req.headers['authorization'].split(' ');
@@ -559,82 +558,237 @@ router.get('/Wall', verifyToken, (req, res, nect) => {
                 if (!err) {
                     // Get the current user arr of following accounts
                     let userFollowing = currentUser['arrFollowing'];
+
+                    userFollowing.push(currentUser._id)
+
                     // Temporal to concat the posts
                     let arrToAppend = []
 
-                    // Iterate through the following users
-                    userFollowing.forEach((userID, index) => {
+                    let tempArrUsers = []
 
-                        // Get the author 
-                        UserModel.findById({ _id: userID })
-                            .then((authorObject) => {
+                    if (userFollowing.length > 0) {
 
-                                // Get the post from all of them
-                                PostModel.find({ strAuthorID: authorObject._id })
-                                    .sort('-datePublished')     // Sort by date
+                        // Iterate through the following users
+                        userFollowing.forEach((userID, index) => {
 
-                                    .then((result) => {
-                                        // To all the posts...
-                                        let tempoArr = result.map((elem) => {
-                                            let arrMedia = []
+                            // Get the author 
+                            UserModel.findById({ _id: userID })
+                                .then((authorObject) => {
 
-                                            // Built the server url
-                                            const url = req.protocol + '://' + req.get("host");
+                                    // Get the post from all of them
+                                    PostModel.find({ strAuthorID: authorObject._id })
+                                        .sort('-datePublished')     // Sort by date
 
-                                            // Built the image path
-                                            const path = url + '/Post_Images/' + authData.nUser['strUserName'] + '/'
+                                        .then((result) => {
+                                            // To all the posts...
+                                            let tempoArr = result.map((elem) => {
+                                                let arrMedia = []
 
-                                            // If the post has images...
-                                            if (elem['arrMedia'].length > 0) {
-                                                // Bulilt the complete path
-                                                arrMedia = elem['arrMedia'].map((index) => {
-                                                    return path + index;
+                                                // Built the server url
+                                                const url = req.protocol + '://' + req.get("host");
+
+                                                // Built the image path
+                                                const path = url + '/Post_Images/' + authorObject['strUserName'] + '/'
+
+                                                // If the post has images...
+                                                if (elem['arrMedia'].length > 0) {
+                                                    // Bulilt the complete path
+                                                    arrMedia = elem['arrMedia'].map((index) => {
+                                                        return path + index;
+                                                    });
+                                                }
+
+                                                // Return the new post object
+                                                return {
+                                                    _id: elem._id,
+                                                    authorObj: {
+                                                        strAuthorID: elem.strAuthorID,
+                                                        strAuthorUserName: authorObject.strUserName,
+                                                        strName: authorObject.strName,
+                                                        imgProfile: path + authorObject.imgProfile
+                                                    },
+                                                    strDescription: elem.strDescription,
+                                                    datePublished: elem.datePublished,
+                                                    arrComments: elem.arrComments.length,
+                                                    arrLikes: elem.arrLikes.length,
+                                                    bLike: searchUserInStringArray(elem.arrLikes, authData.nUser['_id']),
+                                                    arrMedia
+                                                }
+
+                                            });
+                                            tempArrUsers.push(authorObject)
+                                            // Concat the posts
+                                            arrToAppend = arrToAppend.concat(tempoArr);
+
+                                            if (tempArrUsers.length === userFollowing.length) {
+                                                // Calculate the number of users to send
+                                                let iBegin = parseInt(req.query.Page) * parseInt(req.query.Count);
+                                                let iFinal = iBegin + parseInt(req.query.Count);
+
+                                                // Sort by date the array
+                                                arrToAppend = arrToAppend.sort(function (a, b) {
+                                                    return new Date(b.datePublished) - new Date(a.datePublished);
+                                                });
+
+                                                // Get the array part by pagination
+                                                let newArr = arrToAppend.slice(iBegin, iFinal)
+
+                                                // If it reach the final user, return the result array
+                                                return res.status(200).json({
+                                                    bEnd: (iFinal > newArr.length),
+                                                    wallResult: newArr
                                                 });
                                             }
-
-                                            // Return the new post object
-                                            return {
-                                                _id: elem._id,
-                                                authorObj: {
-                                                    strAuthorID: elem.strAuthorID,
-                                                    strAuthorUserName: authorObject.strUserName,
-                                                    strName: authorObject.strName,
-                                                    imgProfile: path + authorObject.imgProfile
-                                                },
-                                                strDescription: elem.strDescription,
-                                                datePublished: elem.datePublished,
-                                                arrComments: elem.arrComments.length,
-                                                arrLikes: elem.arrLikes.length,
-                                                bLike: searchUserInStringArray(elem.arrLikes, authData.nUser['_id']),
-                                                arrMedia
-                                            }
-
                                         });
-                                        // Concat the posts
-                                        arrToAppend = arrToAppend.concat(tempoArr);
-
-                                        // Calculate the number of users to send
-                                        let iBegin = parseInt(req.query.Page) * parseInt(req.query.Count);
-                                        let iFinal = iBegin + parseInt(req.query.Count);
-
-                                        // Sort by date the array
-                                        arrToAppend = arrToAppend.sort(function (a, b) {
-                                            return new Date(b.datePublished) - new Date(a.datePublished);
-                                        });
-
-                                        // Get the array part by pagination
-                                        let newArr = arrToAppend.slice(iBegin, iFinal)
-
-                                        // If it reach the final user, return the result array
-                                        if (index === userFollowing.length - 1) {
-                                            return res.status(200).json({
-                                                bEnd: (iFinal > newArr.length),
-                                                wallResult: newArr
-                                            });
-                                        }
-                                    });
+                                });
+                        });
+                    } else {
+                        // Return the error code
+                        return res.status(201)
+                            .json({
+                                bEnd: true,
+                                wallResult: []
                             });
-                    });
+                    }
+
+
+                } else {
+                    // Return the error code
+                    return res.status(404)
+                        .json({ message: "User not found" });
+                }
+            });
+
+        } else {
+            // Send the error message and code
+            return res.status(401)
+                .json({ message: `Not logged in` });
+        }
+    });
+});
+
+
+// Get posts of all the user you follow and send it to show at the wall
+router.get('/Wall', verifyToken, (req, res, nect) => {
+
+    // Verify the User token
+    jsonwebtoken.verify(req.token, 'SecretKey', (err, authData) => {
+        // Check it the user is logged correctly
+        if (!err) {
+            let missingAttr = null    // Var to get if a attr is missing
+
+            // Check if the server receive all the parameters
+            if (!req.query.Page) { missingAttr = "Page" }
+            if (!req.query.Count) { missingAttr = "Count" }
+
+            // Check that the parameter exists
+            if (missingAttr) {
+                // Return the error code
+                return res.status(406).json({
+                    message: `The ${missingAttr} parameter is missing`
+                });
+            }
+
+            // Make the query to get the user info
+            let userQuery = getUserInfo(authData.nUser['_id']);
+
+            // Check it the current user exists
+            userQuery.exec((err, currentUser) => {
+
+                // If it does...
+                if (!err) {
+                    // Get the current user arr of following accounts
+                    let userFollowing = currentUser['arrFollowing'];
+                    // Temporal to concat the posts
+                    let arrToAppend = []
+
+                    let tempArrUsers = []
+
+                    if (userFollowing.length > 0) {
+
+                        // Iterate through the following users
+                        userFollowing.forEach((userID, index) => {
+
+                            // Get the author 
+                            UserModel.findById({ _id: userID })
+                                .then((authorObject) => {
+
+                                    // Get the post from all of them
+                                    PostModel.find({ strAuthorID: authorObject._id })
+                                        .sort('-datePublished')     // Sort by date
+
+                                        .then((result) => {
+                                            // To all the posts...
+                                            let tempoArr = result.map((elem) => {
+                                                let arrMedia = []
+
+                                                // Built the server url
+                                                const url = req.protocol + '://' + req.get("host");
+
+                                                // Built the image path
+                                                const path = url + '/Post_Images/' + authData.nUser['strUserName'] + '/'
+
+                                                // If the post has images...
+                                                if (elem['arrMedia'].length > 0) {
+                                                    // Bulilt the complete path
+                                                    arrMedia = elem['arrMedia'].map((index) => {
+                                                        return path + index;
+                                                    });
+                                                }
+
+                                                // Return the new post object
+                                                return {
+                                                    _id: elem._id,
+                                                    authorObj: {
+                                                        strAuthorID: elem.strAuthorID,
+                                                        strAuthorUserName: authorObject.strUserName,
+                                                        strName: authorObject.strName,
+                                                        imgProfile: path + authorObject.imgProfile
+                                                    },
+                                                    strDescription: elem.strDescription,
+                                                    datePublished: elem.datePublished,
+                                                    arrComments: elem.arrComments.length,
+                                                    arrLikes: elem.arrLikes.length,
+                                                    bLike: searchUserInStringArray(elem.arrLikes, authData.nUser['_id']),
+                                                    arrMedia
+                                                }
+
+                                            });
+                                            tempArrUsers.push(authorObject)
+                                            // Concat the posts
+                                            arrToAppend = arrToAppend.concat(tempoArr);
+
+                                            if (tempArrUsers.length === userFollowing.length) {
+                                                // Calculate the number of users to send
+                                                let iBegin = parseInt(req.query.Page) * parseInt(req.query.Count);
+                                                let iFinal = iBegin + parseInt(req.query.Count);
+
+                                                // Sort by date the array
+                                                arrToAppend = arrToAppend.sort(function (a, b) {
+                                                    return new Date(b.datePublished) - new Date(a.datePublished);
+                                                });
+
+                                                // Get the array part by pagination
+                                                let newArr = arrToAppend.slice(iBegin, iFinal)
+
+                                                // If it reach the final user, return the result array
+                                                return res.status(200).json({
+                                                    bEnd: (iFinal > newArr.length),
+                                                    wallResult: newArr
+                                                });
+                                            }
+                                        });
+                                });
+                        });
+                    } else {
+                        // Return the error code
+                        return res.status(201)
+                            .json({
+                                bEnd: true,
+                                wallResult: []
+                            });
+                    }
+
 
                 } else {
                     // Return the error code

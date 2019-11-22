@@ -2,11 +2,13 @@
 const express = require('express');
 const bodyparser = require('body-parser');
 const mongoose = require('mongoose');
+const path = require('path')
 
 
 // Setting the app
 const app = express();
 app.use(bodyparser.json());
+app.use('/Post_Images', express.static(path.join('backend/Post_Images')));
 
 // Import Project models
 const userRoutes = require('./Routes/User.js');
