@@ -1,3 +1,39 @@
-<div class="container">
-  <P style="color: white">{{userName}}</P>
+<div class="container-fluid" *ngIf="!boolShowSpinnerDetails && !boolError">
+  <!-- User info here-->
+  <app-profile-details [User]="User"></app-profile-details>
+
+  <!-- Posts -->
+  <div class="row">
+    <div *ngIf="!boolShowSpinnerPosts || this.arrPosts.length > 0" class="col">
+      <div *ngFor="let post of this.arrPosts">
+        <app-post-element [Post]="post"></app-post-element>
+      </div>
+    </div>
+    <div *ngIf="boolShowSpinnerPosts && this.arrPosts.length === 0" class="col-12 text-center">
+      <app-spinner></app-spinner>
+    </div>
+    <div class="col-12 text-center" style="margin: 10px;">
+      <button *ngIf="!boolShowSpinnerDetails && this.arrPosts.length > 0 && !this.boolEndOfPage" class="btn btn-outline-light btn-lg" (click)="onShowMore()">
+        Show More
+      </button>
+    </div>
+  </div>
+</div>
+
+<!-- Spinner -->
+<div class="container-fluid" *ngIf="boolShowSpinnerDetails">
+  <div class="row">
+    <div class="col-12 text-center">
+      <app-spinner></app-spinner>
+    </div>
+  </div>
+</div>
+
+<!-- no user found -->
+<div class="container-fluid" *ngIf="!boolShowSpinnerDetails && boolError" style="padding: 50px;">
+  <div class="row">
+    <div class="col-12 text-center">
+      no user found
+    </div>
+  </div>
 </div>
