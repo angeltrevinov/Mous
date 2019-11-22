@@ -1,4 +1,5 @@
 import { Component, OnInit } from '@angular/core';
+import {PostService} from '../../../services/post.service';
 
 @Component({
   selector: 'app-wall',
@@ -7,9 +8,32 @@ import { Component, OnInit } from '@angular/core';
 })
 export class WallComponent implements OnInit {
 
-  constructor() { }
+  boolShowSpinner: boolean;
+  intPage: number;
+  intCount: number;
+  boolEndOfPage: boolean;
+  arrPosts: [];
 
+  //--------------------------------------------------------
+  constructor(
+    private postService: PostService
+  ) { }
+
+  //--------------------------------------------------------
   ngOnInit() {
+  }
+
+  //--------------------------------------------------------
+  callPostService() {
+    this.boolShowSpinner = true;
+    this.postService.GetPostsFromWall(
+      this.intPage,
+      this.intCount
+    ).subscribe((result) => {
+      console.log(result);
+    }, (error) => {
+      console.log(error);
+    });
   }
 
 }

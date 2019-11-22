@@ -37,4 +37,15 @@ export class PostService {
       .set('Count', intCount.toString());
     return this.http.get(BACKENDPOST + '/GetPosts', {params});
   }
+
+  //--------------------------------------------------------
+  GetPostsFromWall(
+    intPage: number,
+    intCount: number,
+  ) {
+    const params = new HttpParams()
+      .set('Page', intPage.toString())
+      .set('Count', intCount.toString());
+    return this.http.get(BACKENDPOST + '/Wall', {params});
+  }
 }
