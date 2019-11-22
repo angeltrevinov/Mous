@@ -7,11 +7,34 @@
     </div>
   </div>
   <div class="row conainerUser">
-    <div class="col-3 text-center" style="min-width: 70px; max-width: 200px;">
-      <img src="../../../../../assets/images/user.png" alt="" class="rounded-circle">
+    <div class="col-3 text-center" style="min-width: 80px; max-width: 200px;">
+      <img
+        onerror="this.onerror=null; this.src='../../../../../assets/images/user.png'"
+        src="{{ User.imgProfile }}" alt="" class="rounded-circle">
     </div>
     <div class="col-7">
-      user data
+      <div class="row">
+        <div class="col">
+          <h5> {{ User.strName }}</h5>
+        </div>
+        <div class="col">
+          <p> {{ User.strUserName }}</p>
+        </div>
+      </div>
+      <div class="row" *ngIf="User.strDescription">
+        <p> {{ User.strDescription }}</p>
+      </div>
+      <div class="row" *ngIf="User.strLocation">
+        <p>{{ User.strLocation }}</p>
+      </div>
+      <div class="row">
+        <div class="col">
+          <p>Following: {{ User.intFollowing }}</p>
+        </div>
+        <div class="col">
+          <p>Followers: {{ User.intFollowers}}</p>
+        </div>
+      </div>
     </div>
     <div class="col-2">
       edit
