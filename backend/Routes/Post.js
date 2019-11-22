@@ -155,7 +155,11 @@ router.post('/MakePost', verifyToken, (req, res, next) => {
                         });
                     }
 
-
+                  // Check that its post directory does not exists
+                  if (!fs.existsSync('./backend/Post_Images/')) {
+                    // Create the directory
+                    fs.mkdirSync('./backend/Post_Images/');
+                  }
                     // Check that the destination file exists, if not...
                     if (!fs.existsSync('./backend/Post_Images/' + authData.nUser['strUserName'])) {
                         // Create the directory
@@ -574,7 +578,7 @@ router.get('/Wall', verifyToken, (req, res, nect) => {
                         // Iterate through the following users
                         userFollowing.forEach((userID, index) => {
 
-                            // Get the author 
+                            // Get the author
                             UserModel.findById({ _id: userID })
                                 .then((authorObject) => {
 
@@ -712,7 +716,7 @@ router.get('/Wall', verifyToken, (req, res, nect) => {
                         // Iterate through the following users
                         userFollowing.forEach((userID, index) => {
 
-                            // Get the author 
+                            // Get the author
                             UserModel.findById({ _id: userID })
                                 .then((authorObject) => {
 
